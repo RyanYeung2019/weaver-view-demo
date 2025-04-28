@@ -1,0 +1,29 @@
+demo.department:
+  name: 部门
+  desc: 保存公司部门相关资料
+  field:
+    domainKey: 域名
+    domainKey.desc: 划分区域
+    depKey: 部门代码
+    depKey.desc: 标记该部门的代码
+    stopped: 停止
+    stopped.enum:
+      "null": " "
+      "false": 有效
+      "true": 失效
+    positionId: 职位
+    positionId.enum:
+      viewId: org.position
+      param: 
+        domainKey: domainKey
+        depKey: departmentId
+      value: posKey
+      text: posName
+department: demo.department
+common.status:
+  null: 不适用
+  A: 有效
+  C: 失效
+label.position: 职位
+message.demo: '文本: [${text}] 数字: [${number}] 再一次文本: [${text}]'
+  

@@ -1,0 +1,18 @@
+demo.department:
+  name: Department
+  desc: Stores company department-related information
+  field:
+    domainKey: Domain Name
+    domainKey.desc: Divided area
+    depKey: Department Code
+    depKey.desc: Code marking the department
+    stopped: Stopped
+    stopped.enum:
+      "null": " "
+      "false": Active
+      "true": Inactive
+department: demo.department
+common.status:
+  null: N/A
+  A: Active
+  C: Closed
