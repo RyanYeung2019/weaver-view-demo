@@ -71,6 +71,7 @@ public class View {
 			@RequestBody Map<String,Object> data
 			){
 		RequestConfig reqConfig = new RequestConfig();
+		reqConfig.getParams().put("createBy", "ryan");
 		String viewId = request.getRequestURL().toString().split("/view/")[1].replace("/", ".");
 		Integer result = viewQuery.insertViewTable(viewId, data,reqConfig);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();

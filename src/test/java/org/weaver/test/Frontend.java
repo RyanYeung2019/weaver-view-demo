@@ -39,7 +39,7 @@ import org.junit.jupiter.api.MethodOrderer;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("Frontend Resuful Call For SQL")
+@DisplayName("Frontend")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Frontend {
 
@@ -259,7 +259,7 @@ public class Frontend {
 		params.put("sort", "domainKey,userKey-d");
 		params.put("departmentId", "dep03");
 		JSONObject respData = get("/view/org/sys_user",new HttpHeaders(),params,JSONObject.class).getBody();
-		System.out.println(respData);
+		log.info(respData.toString());
 		/*
 		 * # data 返回查询数据
 		 */

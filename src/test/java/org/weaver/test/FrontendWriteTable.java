@@ -1,6 +1,7 @@
 package org.weaver.test;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
@@ -26,11 +27,11 @@ import org.weaver.view.util.Utils;
 import com.alibaba.fastjson.JSONObject;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("Frontend Resuful Call For test")
+@DisplayName("FrontendWriteTable")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FrontendWriteTable {
-	//org.position
-	private static final Logger log = LoggerFactory.getLogger(Frontend.class);
+
+	private static final Logger log = LoggerFactory.getLogger(FrontendWriteTable.class);
 	
 	@Autowired
     private TestRestTemplate restTemplate;
@@ -43,13 +44,29 @@ public class FrontendWriteTable {
 		headers.add("datasource", "dataSource");
 		RequestConfig viewReqConfig = new RequestConfig();
 		JSONObject params = new JSONObject();
-		params.put("deptId", 3333);
-		params.put("userId", 3333);
+		params.put("deptId", 0);
+		params.put("userId", 0);
 		params.put("createTime", viewReqConfig.getDatetimeFormat().format(new Date()));
 		ResponseEntity<JSONObject> result1 = post("/table/view_demo/test_field",headers,params,JSONObject.class);
-		System.out.println(result1.getBody());
-		System.out.println(result1.getHeaders());
-	}		
+		log.info(result1.getBody().toJSONString());
+		log.info(result1.getHeaders().toString());
+		addMoreData(111,111,viewReqConfig.getDatetimeFormat().format(new Date()),headers);
+		addMoreData(222,222,viewReqConfig.getDatetimeFormat().format(new Date()),headers);
+		addMoreData(333,333,viewReqConfig.getDatetimeFormat().format(new Date()),headers);
+		addMoreData(444,444,viewReqConfig.getDatetimeFormat().format(new Date()),headers);
+		addMoreData(555,555,viewReqConfig.getDatetimeFormat().format(new Date()),headers);
+		addMoreData(666,666,viewReqConfig.getDatetimeFormat().format(new Date()),headers);
+	}
+	
+	private void addMoreData(Integer deptId,Integer userId, String createTime,HttpHeaders headers) {
+		JSONObject params = new JSONObject();
+		params.put("deptId", deptId);
+		params.put("userId", userId);
+		params.put("createTime", createTime);
+		ResponseEntity<JSONObject> result1 = post("/table/view_demo/test_field",headers,params,JSONObject.class);
+		log.info(result1.getBody().toJSONString());
+		log.info(result1.getHeaders().toString());
+	}
 
 	@Test
 	@DisplayName("Update")
@@ -64,8 +81,8 @@ public class FrontendWriteTable {
 		params.put("userId", 5555);
 		params.put("createTime", viewReqConfig.getDatetimeFormat().format(new Date()));
 		ResponseEntity<JSONObject> result1 = put("/table/view_demo/test_field",headers,params,JSONObject.class);
-		System.out.println(result1.getBody());
-		System.out.println(result1.getHeaders());
+		log.info(result1.getBody().toJSONString());
+		log.info(result1.getHeaders().toString());
 	}
 	
 	@Test
@@ -77,9 +94,26 @@ public class FrontendWriteTable {
 		JSONObject params = new JSONObject();
 		params.put("id", 1);
 		ResponseEntity<JSONObject> result1 = delete("/table/view_demo/test_field",headers,params,JSONObject.class);
-		System.out.println(result1.getBody());
-		System.out.println(result1.getHeaders());
+		log.info(result1.getBody().toJSONString());
+		log.info(result1.getHeaders().toString());
 	}		
+	@Test
+	@DisplayName("List")
+	@Order(4)
+    public void ListTableTest()  {
+		HttpHeaders headers = new HttpHeaders();
+		Map<String,String> params = new LinkedHashMap<>();
+		//中文版本
+		params.put("lang", "zh");
+		params.put("page", "1");
+		params.put("size", "3");
+		params.put("sort", "deptId-d");
+		params.put("aggrs", "");
+		JSONObject respPage = get("/table/view_demo/test_field",headers,params,JSONObject.class).getBody();
+		log.info("zh");
+		log.info(respPage.toString());		
+		
+	}	
 	
 	
 	private <T> ResponseEntity<T> post(String url,HttpHeaders headers,JSONObject data,Class<T> clazz){

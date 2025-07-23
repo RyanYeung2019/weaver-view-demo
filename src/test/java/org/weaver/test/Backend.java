@@ -35,7 +35,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 @SpringBootTest
-@DisplayName("Backend Call For SQL")
+@DisplayName("Backend")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class Backend {
 
