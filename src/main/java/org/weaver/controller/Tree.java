@@ -16,7 +16,7 @@ import org.weaver.Utils;
 import org.weaver.view.query.ViewStatement;
 import org.weaver.view.query.entity.TreeData;
 import org.weaver.view.query.entity.ViewData;
-import org.weaver.view.query.entity.ViewRequestConfig;
+import org.weaver.view.query.entity.RequestConfig;
 import org.weaver.view.query.ViewQuery;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,13 +43,13 @@ public class Tree {
 		log.debug(Utils.showSampleUrlInDebugLog(request));
 		String viewId = request.getRequestURL().toString().split("/tree/")[1].replace("/", ".");
 		
-		ViewRequestConfig viewReqConfig = new ViewRequestConfig();
+		RequestConfig viewReqConfig = new RequestConfig();
 		viewReqConfig.setLanguage(lang);
 		viewReqConfig.setTranslate(translate);
 		Map<String, Object> queryParams = new HashMap<>();
 		queryParams.put("currentDomain", "domain1");
 		queryParams.put("currentUser", "admin");
-		viewReqConfig.setQueryParams(queryParams);
+		viewReqConfig.setParams(queryParams);
 		
 		ViewStatement statement = viewQuery.prepareTree(viewId,sort);
 		statement.setParams(params);

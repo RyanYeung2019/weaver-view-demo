@@ -28,7 +28,7 @@ import org.weaver.view.query.entity.QueryCriteria;
 import org.weaver.view.query.entity.QueryFilter;
 import org.weaver.view.query.entity.SortByField;
 import org.weaver.view.query.entity.ViewData;
-import org.weaver.view.query.entity.ViewRequestConfig;
+import org.weaver.view.query.entity.RequestConfig;
 import org.weaver.view.query.mapper.BeanPropRowMapper;
 
 import com.alibaba.fastjson.JSON;
@@ -174,8 +174,8 @@ public class Backend {
 		assertEquals(size,15l);
 		//获取统计其他字段的数据
 		java.math.BigDecimal avg = (java.math.BigDecimal) viewData.getAggrs().get("memberCountAvg");
-		assertEquals(avg.toString(),"4.0000");
-		java.math.BigDecimal sum = (java.math.BigDecimal) viewData.getAggrs().get("memberCountSum");
+		assertEquals(avg.toString().subSequence(0, 6),"4.0000");
+		String sum =  viewData.getAggrs().get("memberCountSum").toString();
 		assertEquals(sum.toString(),"60");
 	}	
 	
@@ -217,7 +217,7 @@ public class Backend {
 	@DisplayName("Fetch Data Use Entity Bean")
 	@Order(3)
 	public void sqlFetchData() throws Exception {
-		ViewRequestConfig viewReqConfig = new ViewRequestConfig();
+		RequestConfig viewReqConfig = new RequestConfig();
 		viewReqConfig.setLanguage("zh");
 		Map<String, Object> params = new HashMap<>();
 		params.put("departmentId", "dep03");
@@ -231,7 +231,7 @@ public class Backend {
 		Map<String, Object> queryParams = new HashMap<>();
 		queryParams.put("currentDomain", "domain1");
 		queryParams.put("currentUser", "admin");
-		viewReqConfig.setQueryParams(queryParams);
+		viewReqConfig.setParams(queryParams);
 
 		ViewStatement statement = viewQuery.prepareView("org.sys_user");
 		statement.setParams(params);

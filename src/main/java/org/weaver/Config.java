@@ -77,6 +77,8 @@ public class Config{
                 statement.execute(sql);
             }
         }catch(Exception e) {
+        	e.printStackTrace();
+        	
         	throw new RuntimeException(e);
         }
         log.info("Data is initializated!");    	

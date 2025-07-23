@@ -11,7 +11,7 @@ fields:
     hidden: depKey
 meta:
   group: security
-  tables: view_demo.position
+  tables: view_demo.test_field
 */
 select * from view_demo.position 
   where domain_key = :currentDomain 
