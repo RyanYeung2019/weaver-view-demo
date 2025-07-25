@@ -29,6 +29,27 @@ COMMENT ON COLUMN view_demo.test_field.update_by IS '更新人';
 COMMENT ON COLUMN view_demo.test_field.remark IS '备注';
 
 
+create table view_demo.sys_dict_data
+(
+    dict_code  SERIAL,
+    dict_sort int4 default 0,
+    dict_label  varchar(100) default '':: varchar,
+    dict_value  varchar(100) default '':: varchar,
+    dict_type   varchar(100) default '':: varchar,
+    css_class   varchar(100) default null:: varchar,
+    list_class  varchar(100) default null:: varchar,
+    is_default  char         default 'N'::bpchar,
+    status      char         default '0'::bpchar,
+    create_by   varchar(64)  default '':: varchar,
+    create_time timestamp,
+    update_by   varchar(64)  default '':: varchar,
+    update_time timestamp,
+    remark      varchar(500) default null:: varchar,
+    constraint sys_dict_data_pk primary key (dict_code)
+);
+
+
+
 create table view_demo.department(
     domain_key   character varying(100) NOT NULL,
 	dep_key      character varying(100) NOT NULL,

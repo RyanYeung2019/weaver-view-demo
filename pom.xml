@@ -67,11 +67,19 @@
 			<artifactId>mockito-subclass</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.github.ryanyeung2019</groupId>
-			<artifactId>weaver-view</artifactId>
-			<version>2.1.15</version>
-		</dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.ryanyeung2019</groupId>
+            <artifactId>weaver-view</artifactId>
+            <version>2.1.15</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<plugins>
