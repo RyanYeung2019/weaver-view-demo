@@ -42,26 +42,29 @@ public class FrontendWrite {
 		params.put("deptId", 3333);
 		params.put("userId", 3333);
 		params.put("createTime", viewReqConfig.getDatetimeFormat().format(new Date()));
+		params.put("createBy", "Ryan");
 		ResponseEntity<JSONObject> result1 = post("/view/org/test_field",headers,params,JSONObject.class);
 		log.info(result1.getBody().toString());
 		log.info(result1.getHeaders().toString());
 	}		
-	
+
 	@Test
 	@DisplayName("Update")
 	@Order(2)
     public void updateTest()  {
 		HttpHeaders headers = new HttpHeaders();
-		RequestConfig viewReqConfig = new RequestConfig();
 		JSONObject params = new JSONObject();
+		RequestConfig viewReqConfig = new RequestConfig();
 		params.put("id", 1);
 		params.put("deptId", 5555);
 		params.put("userId", 5555);
-		params.put("createTime", viewReqConfig.getDatetimeFormat().format(new Date()));
+		params.put("updateTime", viewReqConfig.getDatetimeFormat().format(new Date()));
+		params.put("updateBy", "Ryan");
 		ResponseEntity<JSONObject> result1 = put("/view/org/test_field",headers,params,JSONObject.class);
 		log.info(result1.getBody().toString());
 		log.info(result1.getHeaders().toString());
-	}		
+	}
+
 	@Test
 	@DisplayName("Delete")
 	@Order(3)

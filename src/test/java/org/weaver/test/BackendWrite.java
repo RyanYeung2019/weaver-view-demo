@@ -32,13 +32,17 @@ public class BackendWrite {
 		TestFieldEntity testFieldEntity = new TestFieldEntity();
 		testFieldEntity.setDeptId(3333);
 		testFieldEntity.setUserId(3333);
-		testFieldEntity.setCreateTime(new Date());
+		//testFieldEntity.setCreateTime(new Date());
 		
 		testFieldEntity.setCreateBy("Ryan");
 		
 		log.info(testFieldEntity.toString());
 		RequestConfig requestConfig = new RequestConfig();
 		requestConfig.getParams().put("createBy", "ryan");
+		requestConfig.getParams().put("createTime", new Date());
+		requestConfig.getParams().put("status", "0");
+		requestConfig.getParams().put("delFlag", 0);
+	    
 		Integer affected = viewQuery.insertViewTable("org.test_field", testFieldEntity,requestConfig);
 		log.info(testFieldEntity.toString());
 		log.info("affected:"+affected);
@@ -53,6 +57,8 @@ public class BackendWrite {
 		testFieldEntity.setDeptId(55555);
 		testFieldEntity.setUserId(55555);
 		RequestConfig requestConfig = new RequestConfig();
+		requestConfig.getParams().put("updateBy", "ryan");
+		requestConfig.getParams().put("updateTime", new Date());
 		Integer affected = viewQuery.updateViewTable("org.test_field", testFieldEntity,requestConfig);
 		log.info(testFieldEntity.toString());
 		log.info("affected:"+affected);

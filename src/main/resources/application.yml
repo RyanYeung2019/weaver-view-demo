@@ -2,12 +2,12 @@ server:
   port: 8081
 spring:
   datasource:
-    #url: jdbc:postgresql://192.168.3.246:5435/postgres
-    #driver-class-name: org.postgresql.Driver
-    #username: postgres
-    url: jdbc:mysql://192.168.3.246:33068/sys?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
-    driver-class-name: com.mysql.jdbc.Driver
-    username: root
+    url: jdbc:postgresql://192.168.3.246:5435/postgres
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    #url: jdbc:mysql://192.168.3.246:33068/sys?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+    #driver-class-name: com.mysql.jdbc.Driver
+    #username: root
     password: abc123
 logging:
   level:

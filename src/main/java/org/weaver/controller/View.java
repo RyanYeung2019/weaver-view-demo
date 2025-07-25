@@ -1,5 +1,6 @@
 package org.weaver.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,10 +71,16 @@ public class View {
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
+		String viewId = request.getRequestURL().toString().split("/view/")[1].replace("/", ".");
+		
 		RequestConfig reqConfig = new RequestConfig();
 		reqConfig.getParams().put("createBy", "ryan");
-		String viewId = request.getRequestURL().toString().split("/view/")[1].replace("/", ".");
+		reqConfig.getParams().put("createTime", new Date());
+		reqConfig.getParams().put("status", "0");
+		reqConfig.getParams().put("delFlag", 0);
+		
 		Integer result = viewQuery.insertViewTable(viewId, data,reqConfig);
+		
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("rows-affected", result.toString());
 		return new ResponseEntity<>(data,headers, HttpStatus.OK);
@@ -84,8 +91,12 @@ public class View {
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
-		RequestConfig reqConfig = new RequestConfig();
 		String viewId = request.getRequestURL().toString().split("/view/")[1].replace("/", ".");
+		
+		RequestConfig reqConfig = new RequestConfig();
+        reqConfig.getParams().put("updateBy", "ryan");
+        reqConfig.getParams().put("updateTime", new Date());
+		
 		Integer result = viewQuery.updateViewTable(viewId, data,reqConfig);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("rows-affected", result.toString());

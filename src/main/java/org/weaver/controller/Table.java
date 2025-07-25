@@ -1,5 +1,6 @@
 package org.weaver.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,10 +54,6 @@ public class Table {
 		RequestConfig viewReqConfig = new RequestConfig();
 		viewReqConfig.setLanguage(lang);
 		viewReqConfig.setTranslate(translate);
-		Map<String, Object> queryParams = new HashMap<>();
-		queryParams.put("currentDomain", "domain1");
-		queryParams.put("currentUser", "admin");
-		viewReqConfig.setParams(queryParams);
 		
 		ViewStatement statement = viewQuery.prepareTable(tableName,sort,page,size,filter,aggrs);
 		statement.setParams(params);
@@ -77,7 +74,14 @@ public class Table {
 		String table = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
 		String datasource = request.getHeader("datasource");
 		log.info("datasource:"+datasource);
-		reqConfig.getParams().put("createBy", "ryan");
+		
+        reqConfig.getParams().put("createBy", "ryan");
+        reqConfig.getParams().put("createTime", new Date());
+        reqConfig.getParams().put("status", "0");
+        reqConfig.getParams().put("delFlag", 0);	
+        
+        System.out.println("reqConfig.getParams()"+reqConfig.getParams());
+		
 		Integer result = viewQuery.insertTable(datasource, table, data, reqConfig);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("rows-affected", result.toString());
@@ -89,10 +93,14 @@ public class Table {
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
-		RequestConfig reqConfig = new RequestConfig();
 		String tableId = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
 		String datasource = request.getHeader("datasource");
 		log.info("datasource:"+datasource);
+
+		RequestConfig reqConfig = new RequestConfig();
+        reqConfig.getParams().put("updateBy", "ryan");
+        reqConfig.getParams().put("updateTime", new Date());
+        
 		Integer result = viewQuery.updateTable(datasource,tableId, data,reqConfig);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("rows-affected", result.toString());
