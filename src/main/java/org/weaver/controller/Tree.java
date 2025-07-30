@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.weaver.Utils;
-import org.weaver.view.query.ViewStatement;
-import org.weaver.view.query.entity.TreeData;
-import org.weaver.view.query.entity.ViewData;
-import org.weaver.view.query.entity.RequestConfig;
-import org.weaver.view.query.ViewQuery;
+import org.weaver.query.entity.RequestConfig;
+import org.weaver.query.entity.TreeData;
+import org.weaver.query.entity.ViewData;
+import org.weaver.service.ViewQuery;
+import org.weaver.service.ViewStatement;
 
 import jakarta.servlet.http.HttpServletRequest;
 

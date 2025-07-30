@@ -13,8 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.weaver.view.query.ViewQuery;
-import org.weaver.view.query.entity.KeyValueSettingEn;
+import org.weaver.query.entity.KeyValueSettingEn;
+import org.weaver.service.KeyValueService;
+import org.weaver.service.ViewQuery;
 
 @SpringBootTest
 @DisplayName("KeyValue")
@@ -24,7 +25,7 @@ public class KeyValue {
 	private static final Logger log = LoggerFactory.getLogger(KeyValue.class);
 
 	@Autowired
-	private ViewQuery viewQuery;
+	private KeyValueService keyValueService;
 
 	@Test
 	@DisplayName("Base Usage")
@@ -39,16 +40,16 @@ public class KeyValue {
 				{put("dict_type", "my_defaul_type_base");}}
 		       );
 		
-		log.info(viewQuery.getValue(keyValSetting, "key"));
-		assertEquals(viewQuery.getValue(keyValSetting, "key"),null);
+		log.info(keyValueService.getValue(keyValSetting, "key"));
+		assertEquals(keyValueService.getValue(keyValSetting, "key"),null);
 		
-		viewQuery.setValue(keyValSetting, "key","value");
-		log.info(viewQuery.getValue(keyValSetting, "key"));
-		assertEquals(viewQuery.getValue(keyValSetting, "key"),"value");
+		keyValueService.setValue(keyValSetting, "key","value");
+		log.info(keyValueService.getValue(keyValSetting, "key"));
+		assertEquals(keyValueService.getValue(keyValSetting, "key"),"value");
 		
-		viewQuery.setValue(keyValSetting, "key","value1");
-		log.info(viewQuery.getValue(keyValSetting, "key"));
-		assertEquals(viewQuery.getValue(keyValSetting, "key"),"value1");
+		keyValueService.setValue(keyValSetting, "key","value1");
+		log.info(keyValueService.getValue(keyValSetting, "key"));
+		assertEquals(keyValueService.getValue(keyValSetting, "key"),"value1");
 	}
 	
 	@Test
@@ -93,14 +94,14 @@ public class KeyValue {
 		}};
 		
 		
-		assertEquals(viewQuery.getData(keyValSetting, "key"),null);
+		assertEquals(keyValueService.getData(keyValSetting, "key"),null);
 		
-		viewQuery.setData(keyValSetting, "key",myData1,"myUserId1");
-		log.info(viewQuery.getData(keyValSetting, "key").toString());
-		assertEquals(viewQuery.getData(keyValSetting, "key").get("status"),"0");
+		keyValueService.setData(keyValSetting, "key",myData1,"myUserId1");
+		log.info(keyValueService.getData(keyValSetting, "key").toString());
+		assertEquals(keyValueService.getData(keyValSetting, "key").get("status"),"0");
 		
-		viewQuery.setData(keyValSetting, "key",myData2,"myUserId2");
-		log.info(viewQuery.getData(keyValSetting, "key").toString());
-		assertEquals(viewQuery.getData(keyValSetting, "key").get("status"),"2");
+		keyValueService.setData(keyValSetting, "key",myData2,"myUserId2");
+		log.info(keyValueService.getData(keyValSetting, "key").toString());
+		assertEquals(keyValueService.getData(keyValSetting, "key").get("status"),"2");
 	}
 }

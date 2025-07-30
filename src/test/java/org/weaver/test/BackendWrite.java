@@ -1,5 +1,7 @@
 package org.weaver.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Date;
 
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.weaver.bean.TestFieldEntity;
-import org.weaver.view.query.ViewQuery;
-import org.weaver.view.query.entity.RequestConfig;
+import org.weaver.query.entity.RequestConfig;
+import org.weaver.service.TableService;
+import org.weaver.service.ViewQuery;
 
 @SpringBootTest
 @DisplayName("BackendWrite")
@@ -23,12 +26,19 @@ public class BackendWrite {
 	private static final Logger log = LoggerFactory.getLogger(BackendWrite.class);
 	
 	@Autowired
-	private ViewQuery viewQuery;
+	private TableService tableService;
 
+	
 	@Test
-	@DisplayName("Insert")
+	@DisplayName("dataModify")
 	@Order(1)
-	public void insertTest() throws Exception {
+	public void dataModify() throws Exception {
+		long id = insertTest();
+		updateTest(id);
+		deleteTest(id);
+	}
+	
+	private long insertTest() throws Exception {
 		TestFieldEntity testFieldEntity = new TestFieldEntity();
 		testFieldEntity.setDeptId(3333);
 		testFieldEntity.setUserId(3333);
@@ -43,37 +53,34 @@ public class BackendWrite {
 		requestConfig.getParams().put("status", "0");
 		requestConfig.getParams().put("delFlag", 0);
 	    
-		Integer affected = viewQuery.insertViewTable("org.test_field", testFieldEntity,requestConfig);
+		Integer affected = tableService.insertTable(null,"view_demo.test_field", testFieldEntity,requestConfig);
 		log.info(testFieldEntity.toString());
 		log.info("affected:"+affected);
+		assertEquals(affected,1);
+		return testFieldEntity.getId();
 	}
 	
-	@Test
-	@DisplayName("Update")
-	@Order(2)
-	public void updateTest() throws Exception {
+	private void updateTest(long id) throws Exception {
 		TestFieldEntity testFieldEntity = new TestFieldEntity();
-		testFieldEntity.setId(1l);
+		testFieldEntity.setId(id);
 		testFieldEntity.setDeptId(55555);
 		testFieldEntity.setUserId(55555);
 		RequestConfig requestConfig = new RequestConfig();
 		requestConfig.getParams().put("updateBy", "ryan");
 		requestConfig.getParams().put("updateTime", new Date());
-		Integer affected = viewQuery.updateViewTable("org.test_field", testFieldEntity,requestConfig);
+		Integer affected = tableService.updateTable(null,"view_demo.test_field", testFieldEntity,requestConfig);
 		log.info(testFieldEntity.toString());
 		log.info("affected:"+affected);
+		assertEquals(affected,1);
 	}	
-	
-	
-	@Test
-	@DisplayName("Delete")
-	@Order(3)
-	public void deleteTest() throws Exception {
+
+	private void deleteTest(long id) throws Exception {
 		TestFieldEntity testFieldEntity = new TestFieldEntity();
-		testFieldEntity.setId(1l);
+		testFieldEntity.setId(id);
 		RequestConfig requestConfig = new RequestConfig();
-		Integer affected = viewQuery.deleteViewTable("org.test_field", testFieldEntity,requestConfig);
+		Integer affected = tableService.deleteTable(null,"view_demo.test_field", testFieldEntity,requestConfig);
 		log.info(testFieldEntity.toString());
 		log.info("affected:"+affected);
+		assertEquals(affected,1);
 	}	
 }
