@@ -96,9 +96,11 @@ public class Frontend {
 		AssertDepartmentStructureEN(respPageEn);
 	}
 
+
+	
 	@Test
 	@DisplayName("Fetch Data")
-	@Order(2)
+	@Order(3)
     public void sqlToApiFetchData()  {
 		HttpHeaders headers = new HttpHeaders();
 		Map<String,String> params = new LinkedHashMap<>();
@@ -151,7 +153,7 @@ public class Frontend {
 	
 	@Test
 	@DisplayName("Fetch Data Aggrs")
-	@Order(3)
+	@Order(4)
     public void sqlToApiFetchDataAggrs()  {
 		HttpHeaders headers = new HttpHeaders();
 		Map<String,String> params = new LinkedHashMap<>();
@@ -173,7 +175,7 @@ public class Frontend {
 	
 	@Test
 	@DisplayName("Fetch Data With Filter")
-	@Order(4)
+	@Order(5)
     public void sqlToApiFetchDataFilter()  {
 		HttpHeaders headers = new HttpHeaders();
 		
@@ -250,7 +252,7 @@ public class Frontend {
     */
 	@Test
 	@DisplayName("Fetch Data By Remark Yaml")
-	@Order(5)
+	@Order(6)
     public void sqlToApiFetchDataByYamlRemark()  {
 		Map<String,String> params = new LinkedHashMap<>();
 		params.put("lang", "zh");
@@ -510,7 +512,7 @@ public class Frontend {
 	 */
 	@Test
 	@DisplayName("Tree View Api")
-	@Order(6)
+	@Order(7)
     public void treeViewApi()  {
 		Map<String,String> paramsTree = new LinkedHashMap<>();
 		paramsTree.put("lang", "zh");

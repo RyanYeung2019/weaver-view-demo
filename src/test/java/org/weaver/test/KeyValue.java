@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.weaver.query.entity.KeyValueSettingEn;
 import org.weaver.service.KeyValueService;
-import org.weaver.service.ViewQuery;
 
 @SpringBootTest
 @DisplayName("KeyValue")

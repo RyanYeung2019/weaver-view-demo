@@ -2,7 +2,6 @@ package org.weaver.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.weaver.query.entity.RequestConfig;
 import org.weaver.view.util.Utils;
 
 import com.alibaba.fastjson.JSONObject;
@@ -44,65 +42,63 @@ public class FrontendWrite {
 	public void dataModify() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("datasource", "dataSource");
-		RequestConfig viewReqConfig = new RequestConfig();
-		int id = insertData("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
+		int id = insertData("/table/view_demo/test_field",JSONObject.parseObject("""
 					{
-					"deptId":%d,
-					"userId":%d,
-					"createTime":"%s"
+					"deptId":111,
+					"userId":111,
+					"createTime":"2025-07-30 12:12:12"
 				}
-				""", 111, 111, viewReqConfig.getDatetimeFormat().format(new Date()))), headers);
+				"""), headers);
 		readData("/table/view_demo/test_field",Map.of("id",String.valueOf(id)),headers);
 		updateTest("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
 				{
 				"id":%d,
-				"deptId":%d,
-				"userId":%d,
-				"createTime":"%s"
+				"deptId":5555,
+				"userId":5555,
+				"createTime":"2025-07-30 12:12:12"
 			}
-			""",id,5555,5555, viewReqConfig.getDatetimeFormat().format(new Date()))),headers);
+			""",id)),headers);
 		deleteTest("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
 				{
 				"id":%d
 			}
 			""",id)),headers);	
-		insertData("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
+		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
 				{
-				"deptId":%d,
-				"userId":%d,
-				"createTime":"%s"
+				"deptId":222,
+				"userId":222,
+				"createTime":"2025-07-30 12:12:12"
 			}
-			""", 222, 222, viewReqConfig.getDatetimeFormat().format(new Date()))), headers);		
-		insertData("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
+			"""), headers);		
+		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
 				{
-				"deptId":%d,
-				"userId":%d,
-				"createTime":"%s"
+				"deptId":333,
+				"userId":333,
+				"createTime":"2025-07-30 12:12:12"
 			}
-			""", 333, 333, viewReqConfig.getDatetimeFormat().format(new Date()))), headers);		
-		insertData("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
+			"""), headers);		
+		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
 				{
-				"deptId":%d,
-				"userId":%d,
-				"createTime":"%s"
+				"deptId":444,
+				"userId":444,
+				"createTime":"2025-07-30 12:12:12"
 			}
-			""", 444, 444, viewReqConfig.getDatetimeFormat().format(new Date()))), headers);		
-		insertData("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
+			"""), headers);		
+		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
 				{
-				"deptId":%d,
-				"userId":%d,
-				"createTime":"%s"
+				"deptId":555,
+				"userId":555,
+				"createTime":"2025-07-30 12:12:12"
 			}
-			""", 555, 555, viewReqConfig.getDatetimeFormat().format(new Date()))), headers);		
-		insertData("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
+			"""), headers);		
+		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
 				{
-				"deptId":%d,
-				"userId":%d,
-				"createTime":"%s"
+				"deptId":666,
+				"userId":666,
+				"createTime":"2025-07-30 12:12:12"
 			}
-			""", 666, 666, viewReqConfig.getDatetimeFormat().format(new Date()))), headers);		
+			"""), headers);		
 	}	
-
 
 	@Test
 	@DisplayName("dataModifyMultipleKeys")
@@ -110,23 +106,18 @@ public class FrontendWrite {
 	public void dataModifyMultipleKeys() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("datasource", "dataSource");
-		RequestConfig viewReqConfig = new RequestConfig();
-		insertData("/table/view_demo/position",JSONObject.parseObject(String.format("""
+		insertData("/table/view_demo/position",JSONObject.parseObject("""
 					{
-					"domainKey":"%s",
-					"depKey":"%s",
-					"posKey":"%s",
-					"posName":"%s",
-					"createTime":"%s",
-					"updateTime":"%s",
-					"createUser":"%s",
-					"updateUser":"%s"
+					"domainKey":"domainKey1111",
+					"depKey":"depKey1111",
+					"posKey":"posKey1111",
+					"posName":"posName1111",
+					"createTime":"2025-07-30 12:12:12",
+					"updateTime":"2025-07-30 12:12:12",
+					"createUser":"Ryan",
+					"updateUser":"Ryan"
 				}
-				""", "domainKey1111", "depKey1111","posKey1111","posName1111",
-				viewReqConfig.getDatetimeFormat().format(new Date()),
-				viewReqConfig.getDatetimeFormat().format(new Date()),
-				"Ryan","Ryan"
-				)), headers);
+				"""), headers);
 		
 		readData("/table/view_demo/position",
 				Map.of(
@@ -134,34 +125,30 @@ public class FrontendWrite {
 						"depKey","depKey1111",
 						"posKey","posKey1111"),headers);
 		
-		updateTest("/table/view_demo/position",JSONObject.parseObject(String.format("""
+		updateTest("/table/view_demo/position",JSONObject.parseObject("""
 				{
-					"domainKey":"%s",
-					"depKey":"%s",
-					"posKey":"%s",
-					"posName":"%s",
-					"createTime":"%s",
-					"updateTime":"%s",
-					"createUser":"%s",
-					"updateUser":"%s"
+					"domainKey":"domainKey1111",
+					"depKey":"depKey1111",
+					"posKey":"posKey1111",
+					"posName":"posName22222",
+					"createTime":"2025-07-30 12:12:12",
+					"updateTime":"2025-07-30 12:12:12",
+					"createUser":"Ryan",
+					"updateUser":"Ryan"
 			}
-			""","domainKey1111", "depKey1111","posKey1111","posName22222",
-			viewReqConfig.getDatetimeFormat().format(new Date()),
-			viewReqConfig.getDatetimeFormat().format(new Date()),
-			"Ryan","Ryan"
-			)),headers);
+			"""),headers);
 		
-		deleteTest("/table/view_demo/position",JSONObject.parseObject(String.format("""
+		deleteTest("/table/view_demo/position",JSONObject.parseObject("""
 				{
-					"domainKey":"%s",
-					"depKey":"%s",
-					"posKey":"%s"
+					"domainKey":"domainKey1111",
+					"depKey":"depKey1111",
+					"posKey":"posKey1111"
 			}
-			""","domainKey1111", "depKey1111","posKey1111")),headers);		
+			"""),headers);		
 	}
-
+	
 	@Test
-	@DisplayName("List")
+	@DisplayName("Fetch Data from table")
 	@Order(3)
     public void ListTableTest()  {
 		HttpHeaders headers = new HttpHeaders();
@@ -182,7 +169,10 @@ public class FrontendWrite {
 		assertEquals(respPage.getJSONObject("aggrs").getString("size"),"5");
 		log.info(respPage.toString());		
 	}	
-
+	
+	
+	
+	
 	private void readData(String path,Map<String,String> params,HttpHeaders headers) {
 		ResponseEntity<JSONObject> result1 = get(path,headers,params,JSONObject.class);
 		log.info("readData:::::"+result1.getBody().toJSONString());
@@ -201,7 +191,7 @@ public class FrontendWrite {
 	}
 	
     private void updateTest(String path,JSONObject params,HttpHeaders headers)  {
-		ResponseEntity<JSONObject> result1 = put(path,headers,params,JSONObject.class);
+		ResponseEntity<JSONObject> result1 = patch(path,headers,params,JSONObject.class);
 		assertEquals(result1.getHeaders().getFirst("rows-affected"),"1");
 		log.info(result1.getBody().toJSONString());
 		log.info(result1.getHeaders().toString());
@@ -219,12 +209,12 @@ public class FrontendWrite {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
 	    return restTemplate.exchange(builder.build().toString(),HttpMethod.POST,request,clazz);
 	}
-
-	private <T> ResponseEntity<T> put(String url,HttpHeaders headers,JSONObject data,Class<T> clazz){
+	
+	private <T> ResponseEntity<T> patch(String url,HttpHeaders headers,JSONObject data,Class<T> clazz){
 	    HttpEntity<Map<String,Object>> request = new HttpEntity<>(data, headers);
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
-	    return restTemplate.exchange(builder.build().toString(),HttpMethod.PUT,request,clazz);
-	}
+	    return restTemplate.exchange(builder.build().toString(),HttpMethod.PATCH,request,clazz);
+	}	
 
 	private <T> ResponseEntity<T> delete(String url,HttpHeaders headers,JSONObject data,Class<T> clazz){
 	    HttpEntity<Map<String,Object>> request = new HttpEntity<>(data, headers);

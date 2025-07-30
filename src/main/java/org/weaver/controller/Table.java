@@ -1,6 +1,7 @@
 package org.weaver.controller;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -12,12 +13,14 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.weaver.Utils;
 import org.weaver.query.entity.RequestConfig;
 import org.weaver.service.TableService;
 
@@ -37,11 +40,11 @@ public class Table {
 	public ResponseEntity<JSONObject> readTableData(
 			HttpServletRequest request,
 			@RequestParam Map<String,Object> data
-			){
+			) throws Exception{
+		log.debug(Utils.showSampleUrlInDebugLog(request));
 		RequestConfig reqConfig = new RequestConfig();
 		String table = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
 		String datasource = request.getHeader("datasource");
-		log.info("datasource:"+datasource);
 		Date startTime = new Date();
 		JSONObject tableInfo = tableService.readTable(datasource, table, data, reqConfig);
 		tableInfo.put("data", data);
@@ -58,7 +61,6 @@ public class Table {
 		RequestConfig reqConfig = new RequestConfig();
 		String table = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
 		String datasource = request.getHeader("datasource");
-		log.info("datasource:"+datasource);
 		
         reqConfig.getParams().put("createBy", "ryan");
         reqConfig.getParams().put("createTime", new Date());
@@ -74,21 +76,41 @@ public class Table {
 	}
 	
 	@PutMapping("**")
+	public ResponseEntity<int[]> persistenTableBatch(
+			HttpServletRequest request,
+			@RequestBody List<Map<String,Object>> datas			
+			){
+		
+		String tableId = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
+		String datasource = request.getHeader("datasource");
+		RequestConfig reqConfig = new RequestConfig();
+        reqConfig.getParams().put("updateBy", "ryan");
+        reqConfig.getParams().put("updateTime", new Date());
+		int[] result = tableService.persistenTableBatch(datasource,tableId, datas,reqConfig);
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@PatchMapping("**")
 	public ResponseEntity<Map<String, Object>> modifyEdit(
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
 		String tableId = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
 		String datasource = request.getHeader("datasource");
-		log.info("datasource:"+datasource);
-
+		String whereFields = request.getHeader("whereFields");
+		String assertMaxRecordAffected = request.getHeader("assertMaxRecordAffected");
 		RequestConfig reqConfig = new RequestConfig();
         reqConfig.getParams().put("updateBy", "ryan");
         reqConfig.getParams().put("updateTime", new Date());
-        
-		Integer result = tableService.updateTable(datasource,tableId, data,reqConfig);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("rows-affected", result.toString());
+		if(whereFields!=null && assertMaxRecordAffected!=null) {
+			String[] fields = whereFields.split(",");
+			Integer result = tableService.updateTableBatch(datasource,tableId,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
+			headers.add("rows-affected", result.toString());
+		}else {
+			Integer result = tableService.updateTable(datasource,tableId,data,reqConfig);
+			headers.add("rows-affected", result.toString());
+		}
 		return new ResponseEntity<>(data,headers, HttpStatus.OK);
 	}
 	
@@ -100,10 +122,18 @@ public class Table {
 		RequestConfig reqConfig = new RequestConfig();
 		String tableId = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
 		String datasource = request.getHeader("datasource");
-		log.info("datasource:"+datasource);
-		Integer result = tableService.deleteTable(datasource,tableId,data,reqConfig);
+		String whereFields = request.getHeader("whereFields");
+		String assertMaxRecordAffected = request.getHeader("assertMaxRecordAffected");
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("rows-affected", result.toString());
+		if(whereFields!=null && assertMaxRecordAffected!=null) {
+			String[] fields = whereFields.split(",");
+			Integer result = tableService.deleteTableBatch(datasource,tableId,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
+			headers.add("rows-affected", result.toString());
+		}else {
+			Integer result = tableService.deleteTable(datasource,tableId,data,reqConfig);
+			headers.add("rows-affected", result.toString());
+		}
 		return new ResponseEntity<>(data,headers, HttpStatus.OK);
 	}
+	
 }

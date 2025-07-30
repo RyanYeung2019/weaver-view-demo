@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.weaver.bean.TestFieldEntity;
 import org.weaver.query.entity.RequestConfig;
 import org.weaver.service.TableService;
-import org.weaver.service.ViewQuery;
 
 @SpringBootTest
 @DisplayName("BackendWrite")
@@ -28,7 +27,6 @@ public class BackendWrite {
 	@Autowired
 	private TableService tableService;
 
-	
 	@Test
 	@DisplayName("dataModify")
 	@Order(1)
