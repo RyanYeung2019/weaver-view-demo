@@ -29,6 +29,7 @@ public class View {
 	@Autowired
 	private ViewQuery viewQuery;
 	
+	String classLevelMapping = "/view/";
 	
 	@GetMapping("**")
 	public ResponseEntity<ViewData<Map<String, Object>>> queryViewData(HttpServletRequest request,
@@ -43,8 +44,8 @@ public class View {
 			@RequestParam(required = false) Boolean translate)
 			throws Exception {
 		log.debug(Utils.showSampleUrlInDebugLog(request));
-		String viewId = request.getRequestURL().toString().split("/view/")[1].replace("/", ".");
-
+		String viewId = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+		havePermission(viewId,"query");
 		RequestConfig viewReqConfig = new RequestConfig();
 		viewReqConfig.setLanguage(lang);
 		viewReqConfig.setTranslate(translate);
@@ -65,4 +66,8 @@ public class View {
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
+    private void havePermission(String tableName,String action){
+        log.info(String.format("find permission mapping for '%s' action '%s'",tableName,action));
+    }		
+	
 }

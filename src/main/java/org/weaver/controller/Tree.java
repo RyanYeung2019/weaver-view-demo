@@ -30,6 +30,8 @@ public class Tree {
 	@Autowired
 	private ViewQuery viewQuery;
 
+	String classLevelMapping = "/tree/";
+	
 	@GetMapping("**")
 	public ResponseEntity<ViewData<TreeData<Map<String, Object>>>> queryViewData(HttpServletRequest request,
 			@RequestParam Map<String, Object> params, 
@@ -41,8 +43,8 @@ public class Tree {
 			@RequestParam(required = false) Boolean translate) throws Exception {
 		
 		log.debug(Utils.showSampleUrlInDebugLog(request));
-		String viewId = request.getRequestURL().toString().split("/tree/")[1].replace("/", ".");
-		
+		String viewId = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+		havePermission(viewId,"list");
 		RequestConfig viewReqConfig = new RequestConfig();
 		viewReqConfig.setLanguage(lang);
 		viewReqConfig.setTranslate(translate);
@@ -61,4 +63,8 @@ public class Tree {
 		
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
+	
+    private void havePermission(String tableName,String action){
+        log.info(String.format("find permission mapping for '%s' action '%s'",tableName,action));
+    }	
 }

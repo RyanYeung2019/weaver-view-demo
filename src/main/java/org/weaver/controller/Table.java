@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.weaver.Utils;
 import org.weaver.query.entity.RequestConfig;
 import org.weaver.service.TableService;
 
@@ -36,14 +35,16 @@ public class Table {
 	@Autowired
 	private TableService tableService;
 	
+	String classLevelMapping = "/table/";
+	
 	@GetMapping("**")
 	public ResponseEntity<JSONObject> readTableData(
 			HttpServletRequest request,
 			@RequestParam Map<String,Object> data
 			) throws Exception{
-		log.debug(Utils.showSampleUrlInDebugLog(request));
 		RequestConfig reqConfig = new RequestConfig();
-		String table = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
+		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+		havePermission(table,"list");		
 		String datasource = request.getHeader("datasource");
 		Date startTime = new Date();
 		JSONObject tableInfo = tableService.readTable(datasource, table, data, reqConfig);
@@ -51,18 +52,18 @@ public class Table {
 		tableInfo.put("startTime", startTime);
 		tableInfo.put("endTime", new Date());
 		return new ResponseEntity<>(tableInfo,HttpStatus.OK);
-	}	
+	}
 	
 	@PostMapping("**")
-	public ResponseEntity<Map<String,Object>> createNew(
+	public ResponseEntity<Map<String,Object>> addRecord(
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
 		RequestConfig reqConfig = new RequestConfig();
-		String table = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
+		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+		havePermission(table,"add");
 		String datasource = request.getHeader("datasource");
-		
-        reqConfig.getParams().put("createBy", "ryan");
+        reqConfig.getParams().put("createBy", LoginHelper.getUsername());
         reqConfig.getParams().put("createTime", new Date());
         reqConfig.getParams().put("status", "0");
         reqConfig.getParams().put("delFlag", 0);	
@@ -80,60 +81,71 @@ public class Table {
 			HttpServletRequest request,
 			@RequestBody List<Map<String,Object>> datas			
 			){
-		
-		String tableId = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
+		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+		havePermission(table,"add");
+		havePermission(table,"edit");
 		String datasource = request.getHeader("datasource");
 		RequestConfig reqConfig = new RequestConfig();
-        reqConfig.getParams().put("updateBy", "ryan");
+        reqConfig.getParams().put("createBy", LoginHelper.getUsername());
+        reqConfig.getParams().put("createTime", new Date());
+        reqConfig.getParams().put("status", "0");
+        reqConfig.getParams().put("delFlag", 0);	
+        reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
         reqConfig.getParams().put("updateTime", new Date());
-		int[] result = tableService.persistenTableBatch(datasource,tableId, datas,reqConfig);
+		int[] result = tableService.persistenTableBatch(datasource,table, datas,reqConfig);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
 	@PatchMapping("**")
-	public ResponseEntity<Map<String, Object>> modifyEdit(
+	public ResponseEntity<Map<String, Object>> edit(
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
-		String tableId = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
+		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+		havePermission(table,"edit");
 		String datasource = request.getHeader("datasource");
 		String whereFields = request.getHeader("whereFields");
 		String assertMaxRecordAffected = request.getHeader("assertMaxRecordAffected");
 		RequestConfig reqConfig = new RequestConfig();
-        reqConfig.getParams().put("updateBy", "ryan");
-        reqConfig.getParams().put("updateTime", new Date());
+        reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
+        reqConfig.getParams().put("updateTime", new Date());        
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		if(whereFields!=null && assertMaxRecordAffected!=null) {
 			String[] fields = whereFields.split(",");
-			Integer result = tableService.updateTableBatch(datasource,tableId,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
+			Integer result = tableService.updateTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
 			headers.add("rows-affected", result.toString());
 		}else {
-			Integer result = tableService.updateTable(datasource,tableId,data,reqConfig);
+			Integer result = tableService.updateTable(datasource,table,data,reqConfig);
 			headers.add("rows-affected", result.toString());
 		}
 		return new ResponseEntity<>(data,headers, HttpStatus.OK);
 	}
 	
 	@DeleteMapping("**")
-	public ResponseEntity<Map<String, Object>> deleteErase(
+	public ResponseEntity<Map<String, Object>> remove(
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
 		RequestConfig reqConfig = new RequestConfig();
-		String tableId = request.getRequestURL().toString().split("/table/")[1].replace("/", ".");
+		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+		havePermission(table,"remove");
 		String datasource = request.getHeader("datasource");
 		String whereFields = request.getHeader("whereFields");
 		String assertMaxRecordAffected = request.getHeader("assertMaxRecordAffected");
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		if(whereFields!=null && assertMaxRecordAffected!=null) {
 			String[] fields = whereFields.split(",");
-			Integer result = tableService.deleteTableBatch(datasource,tableId,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
+			Integer result = tableService.deleteTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
 			headers.add("rows-affected", result.toString());
 		}else {
-			Integer result = tableService.deleteTable(datasource,tableId,data,reqConfig);
+			Integer result = tableService.deleteTable(datasource,table,data,reqConfig);
 			headers.add("rows-affected", result.toString());
 		}
 		return new ResponseEntity<>(data,headers, HttpStatus.OK);
 	}
+	
+    private void havePermission(String tableName,String action){
+        log.info(String.format("find permission mapping for '%s' action '%s'",tableName,action));
+    }
 	
 }
