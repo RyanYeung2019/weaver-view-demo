@@ -49,8 +49,19 @@ public class Tree {
 		viewReqConfig.setLanguage(lang);
 		viewReqConfig.setTranslate(translate);
 		Map<String, Object> queryParams = new HashMap<>();
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        Long userId = loginUser.getUserId();
+        String userName = loginUser.getUsername();
+        Long deptId = loginUser.getDeptId();
+        Long workshopId = loginUser.getWorkshopId();
+        queryParams.put("currentUserId",userId);
+        queryParams.put("currentUserName",userName);
+        queryParams.put("currentDeptId",deptId);
+        queryParams.put("currentWorkshopId",workshopId);
+        
 		queryParams.put("currentDomain", "domain1");
-		queryParams.put("currentUser", "admin");
+		queryParams.put("currentUser", "admin");        
+		
 		viewReqConfig.setParams(queryParams);
 		
 		ViewStatement statement = viewQuery.prepareTree(viewId,sort);

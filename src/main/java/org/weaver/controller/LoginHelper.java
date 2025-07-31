@@ -6,4 +6,10 @@ public class LoginHelper {
 		return "Ryan";
 	}
 
+	public static LoginUser getLoginUser() {
+		// TODO Auto-generated method stub
+		return new LoginUser();
+	}
+
+
 }
