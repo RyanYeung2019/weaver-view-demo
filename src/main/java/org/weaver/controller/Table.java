@@ -67,9 +67,6 @@ public class Table {
         reqConfig.getParams().put("createTime", new Date());
         reqConfig.getParams().put("status", "0");
         reqConfig.getParams().put("delFlag", 0);	
-        
-        System.out.println("reqConfig.getParams()"+reqConfig.getParams());
-		
 		Integer result = tableService.insertTable(datasource, table, data, reqConfig);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("rows-affected", result.toString());
@@ -97,7 +94,7 @@ public class Table {
 	}
 	
 	@PatchMapping("**")
-	public ResponseEntity<Map<String, Object>> edit(
+	public ResponseEntity<Integer> edit(
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
@@ -109,20 +106,20 @@ public class Table {
 		RequestConfig reqConfig = new RequestConfig();
         reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
         reqConfig.getParams().put("updateTime", new Date());        
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		Integer result = 0;
 		if(whereFields!=null && assertMaxRecordAffected!=null) {
 			String[] fields = whereFields.split(",");
-			Integer result = tableService.updateTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
-			headers.add("rows-affected", result.toString());
+			result = tableService.updateTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
+			
 		}else {
-			Integer result = tableService.updateTable(datasource,table,data,reqConfig);
-			headers.add("rows-affected", result.toString());
+			result = tableService.updateTable(datasource,table,data,reqConfig);
+			
 		}
-		return new ResponseEntity<>(data,headers, HttpStatus.OK);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
 	@DeleteMapping("**")
-	public ResponseEntity<Map<String, Object>> remove(
+	public ResponseEntity<Integer> remove(
 			HttpServletRequest request,
 			@RequestBody Map<String,Object> data
 			){
@@ -132,16 +129,14 @@ public class Table {
 		String datasource = request.getHeader("datasource");
 		String whereFields = request.getHeader("whereFields");
 		String assertMaxRecordAffected = request.getHeader("assertMaxRecordAffected");
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		Integer result = 0;
 		if(whereFields!=null && assertMaxRecordAffected!=null) {
 			String[] fields = whereFields.split(",");
-			Integer result = tableService.deleteTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
-			headers.add("rows-affected", result.toString());
+			result = tableService.deleteTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
 		}else {
-			Integer result = tableService.deleteTable(datasource,table,data,reqConfig);
-			headers.add("rows-affected", result.toString());
+			result = tableService.deleteTable(datasource,table,data,reqConfig);
 		}
-		return new ResponseEntity<>(data,headers, HttpStatus.OK);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
     private void havePermission(String tableName,String action){
