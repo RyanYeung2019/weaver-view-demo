@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.weaver.Utils;
 import org.weaver.query.entity.RequestConfig;
 import org.weaver.query.entity.ViewData;
 import org.weaver.service.ViewQuery;

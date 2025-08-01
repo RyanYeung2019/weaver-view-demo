@@ -1,65 +1,51 @@
-DROP SCHEMA if exists view_demo CASCADE;
-create SCHEMA view_demo;
+DROP DATABASE IF EXISTS view_demo;
+CREATE DATABASE IF NOT EXISTS view_demo DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE view_demo.test_field
 (
-    id                                                                         SERIAL  ,
-    dept_id              bigint                                                     NULL DEFAULT NULL,
-    user_id              bigint                                                     NULL DEFAULT NULL,
-    status               character varying(100) NULL DEFAULT '0' ,
-    del_flag             int                                                        NULL DEFAULT 0 ,
-    create_time          timestamp without time zone                                                   NULL DEFAULT NULL ,
-    create_by            character varying(64)   NULL DEFAULT NULL,
-    update_time          timestamp without time zone                                                   NULL DEFAULT NULL ,
-    update_by            character varying(64)   NULL DEFAULT NULL,
-    remark               character varying(500)  NULL DEFAULT NULL,
-    PRIMARY KEY (id)
-);  
-
-COMMENT ON TABLE view_demo.test_field IS  '测试表'; 
-COMMENT ON COLUMN view_demo.test_field.id IS '主键';
-COMMENT ON COLUMN view_demo.test_field.dept_id IS '部门id';
-COMMENT ON COLUMN view_demo.test_field.user_id IS '用户id';
-COMMENT ON COLUMN view_demo.test_field.status IS '状态（0正常 1停用）';
-COMMENT ON COLUMN view_demo.test_field.del_flag IS '删除标志';
-COMMENT ON COLUMN view_demo.test_field.create_time IS '创建时间';
-COMMENT ON COLUMN view_demo.test_field.create_by IS '创建人';
-COMMENT ON COLUMN view_demo.test_field.update_time IS '更新时间';
-COMMENT ON COLUMN view_demo.test_field.update_by IS '更新人';
-COMMENT ON COLUMN view_demo.test_field.remark IS '备注';
-
-
+    id                   bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT '主键',
+    dept_id              bigint(0)                                                     NULL DEFAULT NULL COMMENT '部门id',
+    user_id              bigint(0)                                                     NULL DEFAULT NULL COMMENT '用户id',
+    status               char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci      NULL DEFAULT '0' COMMENT '状态（0正常 1停用）',
+    del_flag             int(0)                                                        NULL DEFAULT 0 COMMENT '删除标志',
+    create_time          datetime(0)                                                   NULL DEFAULT NULL COMMENT '创建时间',
+    create_by            varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL COMMENT '创建人',
+    update_time          datetime(0)                                                   NULL DEFAULT NULL COMMENT '更新时间',
+    update_by            varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL COMMENT '更新人',
+    remark               varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE
+)  COMMENT = '测试表';  
+  
 create table view_demo.sys_dict_data
 (
-    dict_code  SERIAL,
-    dict_sort int4 default 0,
-    dict_label  varchar(100) default '':: varchar,
-    dict_value  varchar(100) default '':: varchar,
-    dict_type   varchar(100) default '':: varchar,
-    css_class   varchar(100) default null:: varchar,
-    list_class  varchar(100) default null:: varchar,
-    is_default  char         default 'N'::bpchar,
-    status      char         default '0'::bpchar,
-    create_by   varchar(64)  default '':: varchar,
-    create_time timestamp,
-    update_by   varchar(64)  default '':: varchar,
-    update_time timestamp,
-    remark      varchar(500) default null:: varchar,
-    constraint sys_dict_data_pk primary key (dict_code)
-);
-
+    dict_code   bigint(20) not null  AUTO_INCREMENT comment '字典编码',
+    dict_sort   int(4)       default 0 comment '字典排序',
+    dict_label  varchar(100) default '' comment '字典标签',
+    dict_value  varchar(100) default '' comment '字典键值',
+    dict_type   varchar(100) default '' comment '字典类型',
+    css_class   varchar(100) default null comment '样式属性（其他样式扩展）',
+    list_class  varchar(100) default null comment '表格回显样式',
+    is_default  char(1)      default 'N' comment '是否默认（Y是 N否）',
+    status      char(1)      default '0' comment '状态（0正常 1停用）',
+    create_by   varchar(64)  default '' comment '创建者',
+    create_time datetime comment '创建时间',
+    update_by   varchar(64)  default '' comment '更新者',
+    update_time datetime comment '更新时间',
+    remark      varchar(500) default null comment '备注',
+    primary key (dict_code)
+) engine = innodb comment = '字典数据表';
 
 
 create table view_demo.department(
-    domain_key   character varying(100) NOT NULL,
-	dep_key      character varying(100) NOT NULL,
-	dep_name     character varying(100) NOT NULL,
-	member_count int NULL,
+    domain_key   VARCHAR(100) NOT NULL,
+	dep_key      VARCHAR(100) NOT NULL,
+	dep_name     VARCHAR(100) NOT NULL,
+	member_count Integer NULL,
 	stopped      BOOLEAN,
-    create_time  timestamp without time zone NOT NULL,
-    create_user  character varying(100) NOT NULL,
-    update_time  timestamp without time zone NOT NULL,
-    update_user  character varying(100) NOT NULL,
+    create_time  DATETIME NOT NULL,
+    create_user  VARCHAR(100) NOT NULL,
+    update_time  DATETIME NOT NULL,
+    update_user  VARCHAR(100) NOT NULL,
 	PRIMARY KEY (domain_key,dep_key)
 );
 
@@ -84,14 +70,14 @@ VALUES
 
 
 create table view_demo.position(
-  domain_key   character varying(100) NOT NULL,
-  dep_key      character varying(100) NOT NULL,
-  pos_key      character varying(100) NOT NULL,
-  pos_name     character varying(100) NOT NULL,
-  create_time  timestamp without time zone NOT NULL,
-  create_user  character varying(100) NOT NULL,
-  update_time  timestamp without time zone NOT NULL,
-  update_user  character varying(100) NOT NULL,
+  domain_key   VARCHAR(100) NOT NULL,
+  dep_key      VARCHAR(100) NOT NULL,
+  pos_key      VARCHAR(100) NOT NULL,
+  pos_name     VARCHAR(100) NULL,
+  create_time  DATETIME NOT NULL,
+  create_user  VARCHAR(100) NOT NULL,
+  update_time  DATETIME NOT NULL,
+  update_user  VARCHAR(100) NOT NULL,
   PRIMARY KEY (domain_key,dep_key,pos_key)
 );
 
@@ -106,19 +92,19 @@ VALUES
 ('domain1', 'dep02', 'pos2', '后勤保障员', NOW(), 'admin', NOW(), 'admin');
 
 create table view_demo.sys_user(
-  domain_key    character varying(100) NOT NULL,
-  user_key      character varying(100) NOT NULL,
-  parent_user   character varying(100) NULL,
-  user_name     character varying(100) NOT NULL,
-  position_id   character varying(100) NOT NULL,
-  department_id character varying(100) NOT NULL,
-  status        character varying(10)  NULL,
-  photo         character varying(100) NULL,
-  remark        character varying(1000)  NULL,
-  create_time   timestamp without time zone NOT NULL,
-  create_user   character varying(100) NOT NULL,
-  update_time   timestamp without time zone NOT NULL,
-  update_user   character varying(100) NOT NULL,
+  domain_key    VARCHAR(100) NOT NULL,
+  user_key      VARCHAR(100) NOT NULL,
+  parent_user   VARCHAR(100) NULL,
+  user_name     VARCHAR(100) NOT NULL,
+  position_id   VARCHAR(100) NOT NULL,
+  department_id VARCHAR(100) NOT NULL,
+  status        VARCHAR(10)  NULL,
+  photo         VARCHAR(100) NULL,
+  remark        VARCHAR(1000)  NULL,
+  create_time   DATETIME NOT NULL,
+  create_user   VARCHAR(100) NOT NULL,
+  update_time   DATETIME NOT NULL,
+  update_user   VARCHAR(100) NOT NULL,
   PRIMARY KEY (user_key)
 );
 

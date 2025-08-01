@@ -73,7 +73,7 @@ create table view_demo.position(
   domain_key   VARCHAR(100) NOT NULL,
   dep_key      VARCHAR(100) NOT NULL,
   pos_key      VARCHAR(100) NOT NULL,
-  pos_name     VARCHAR(100) NOT NULL,
+  pos_name     VARCHAR(100) NULL,
   create_time  DATETIME NOT NULL,
   create_user  VARCHAR(100) NOT NULL,
   update_time  DATETIME NOT NULL,

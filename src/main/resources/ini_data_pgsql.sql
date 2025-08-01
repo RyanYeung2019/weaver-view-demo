@@ -87,7 +87,7 @@ create table view_demo.position(
   domain_key   character varying(100) NOT NULL,
   dep_key      character varying(100) NOT NULL,
   pos_key      character varying(100) NOT NULL,
-  pos_name     character varying(100) NOT NULL,
+  pos_name     character varying(100) NULL,
   create_time  timestamp without time zone NOT NULL,
   create_user  character varying(100) NOT NULL,
   update_time  timestamp without time zone NOT NULL,

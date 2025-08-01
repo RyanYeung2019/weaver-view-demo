@@ -60,7 +60,7 @@ public class Tree {
         queryParams.put("currentWorkshopId",workshopId);
         
 		queryParams.put("currentDomain", "domain1");
-		queryParams.put("currentUser", "admin");        
+		queryParams.put("currentUser", "admin");
 		
 		viewReqConfig.setParams(queryParams);
 		

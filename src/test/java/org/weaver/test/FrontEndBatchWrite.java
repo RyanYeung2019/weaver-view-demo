@@ -96,7 +96,6 @@ public class FrontEndBatchWrite {
 				"domainKey":"domainKey1111",
 				"depKey":"depKey1111",
 				"posKey":"posKey2222",
-				"posName":"posName22222222",
 				"createTime":"2025-07-30 12:12:12",
 				"updateTime":"2025-07-30 12:12:12",
 				"createUser":"Ryan",
@@ -124,6 +123,14 @@ public class FrontEndBatchWrite {
 		log.info(resultRead.getBody().toJSONString());
 		
 		assertEquals(resultRead.getBody().getJSONObject("data").getString("posName"),"posName33332222");
+		
+		resultRead = get("/table/view_demo/position",
+				new HttpHeaders(),Map.of("domainKey","domainKey1111",
+						"depKey","depKey1111",
+						"posKey","posKey2222"),
+				JSONObject.class);
+		log.info(resultRead.getBody().toJSONString());
+		assertEquals(resultRead.getBody().getJSONObject("data").getString("posName"),null);
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("whereFields", "domainKey,depKey");
