@@ -1,5 +1,6 @@
 package org.weaver.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.weaver.config.ViewDefine;
 import org.weaver.query.entity.RequestConfig;
 import org.weaver.query.entity.ViewData;
 import org.weaver.service.ViewQuery;
@@ -28,6 +30,9 @@ public class View {
 	@Autowired
 	private ViewQuery viewQuery;
 	
+	@Autowired
+	ViewDefine viewDefine;
+	
 	String classLevelMapping = "/view/";
 	
     @GetMapping("**")
@@ -43,6 +48,17 @@ public class View {
                                                                        @RequestParam(required = false) Boolean translate)
         throws Exception {
         String viewId = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+        String reloadViewDefine = "reloadAllTheViewsDefineNow";
+        if(viewId.endsWith(reloadViewDefine)) {
+        	Date startTime = new Date();
+        	String result = viewDefine.loadView();
+        	ViewData<Map<String, Object>> data = new ViewData<>();
+    		data.setStartTime(startTime);
+    		data.setEndTime(new Date());
+    		data.setMessage(result);
+    		data.setName(reloadViewDefine);
+        	return new ResponseEntity<>(data, HttpStatus.OK);
+        }
         ViewStatement statement = null;
         if("table".equals(type)) {
             havePermissionTable(viewId,"query");

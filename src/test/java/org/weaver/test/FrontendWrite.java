@@ -191,17 +191,15 @@ public class FrontendWrite {
 	}
 	
     private void updateTest(String path,JSONObject params,HttpHeaders headers)  {
-		ResponseEntity<JSONObject> result1 = patch(path,headers,params,JSONObject.class);
-		assertEquals(result1.getHeaders().getFirst("rows-affected"),"1");
-		log.info(result1.getBody().toJSONString());
-		log.info(result1.getHeaders().toString());
+		ResponseEntity<Integer> result1 = patch(path,headers,params,Integer.class);
+		assertEquals(result1.getBody(),1);
+		log.info(result1.getBody().toString());
 	}
 
     private void deleteTest(String path,JSONObject params,HttpHeaders headers)  {
-		ResponseEntity<JSONObject> result1 = delete(path,headers,params,JSONObject.class);
-		log.info(result1.getBody().toJSONString());
-		log.info(result1.getHeaders().toString());
-		assertEquals(result1.getHeaders().getFirst("rows-affected"),"1");
+		ResponseEntity<Integer> result1 = delete(path,headers,params,Integer.class);
+		log.info(result1.getBody().toString());
+		assertEquals(result1.getBody(),1);
 	}		
 
 	private <T> ResponseEntity<T> post(String url,HttpHeaders headers,JSONObject data,Class<T> clazz){

@@ -135,14 +135,14 @@ public class FrontEndBatchWrite {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("whereFields", "domainKey,depKey");
 		headers.add("assertMaxRecordAffected", "3");
-		ResponseEntity<JSONObject> patchResult = patch("/table/view_demo/position",headers,JSONObject.parseObject("""
+		ResponseEntity<Integer> patchResult = patch("/table/view_demo/position",headers,JSONObject.parseObject("""
 				{
 					"domainKey":"domainKey1111",
 					"depKey":"depKey1111",
 					"posName":"posName99999999",
 				}
-				"""),JSONObject.class);
-		assertEquals(patchResult.getHeaders().getFirst("rows-affected"),"3");
+				"""),Integer.class);
+		assertEquals(patchResult.getBody(),3);
 		
 		resultRead = get("/table/view_demo/position",
 				new HttpHeaders(),Map.of("domainKey","domainKey1111",
@@ -152,13 +152,13 @@ public class FrontEndBatchWrite {
 		log.info(resultRead.getBody().toJSONString());	
 		assertEquals(resultRead.getBody().getJSONObject("data").getString("posName"),"posName99999999");
 		
-		ResponseEntity<JSONObject> deleteResult = delete("/table/view_demo/position",headers,JSONObject.parseObject("""
+		ResponseEntity<Integer> deleteResult = delete("/table/view_demo/position",headers,JSONObject.parseObject("""
 				{
 					"domainKey":"domainKey1111",
 					"depKey":"depKey1111"
 				}
-				"""),JSONObject.class);
-		assertEquals(deleteResult.getHeaders().getFirst("rows-affected"),"3");
+				"""),Integer.class);
+		assertEquals(deleteResult.getBody(),3);
 	}
 	
 	private <T> ResponseEntity<T> patch(String url,HttpHeaders headers,JSONObject data,Class<T> clazz){
