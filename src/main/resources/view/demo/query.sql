@@ -1,0 +1,1 @@
+select * from view_demo.department where domain_key = :domainKey
