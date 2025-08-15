@@ -2,14 +2,24 @@ server:
   port: 8081
 spring:
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource  
+    #url: jdbc:mysql://192.168.3.246:33068/sys?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+    #driver-class-name: com.mysql.cj.jdbc.Driver
+    #username: root
+    #password: abc123
+    
     #url: jdbc:postgresql://192.168.3.246:5435/postgres
     #driver-class-name: org.postgresql.Driver
     #username: postgres
-    url: jdbc:mysql://192.168.3.246:33068/sys?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
-    driver-class-name: com.mysql.jdbc.Driver
-    username: root
-    password: abc123
+    #password: abc123
+          
+    url: jdbc:sqlite:database.db
+    driver-class-name: org.sqlite.JDBC
+    username: xxx
+    password: xxx
 logging:
   level:
-    org.weaver: debug
-
+    root: info
+  config: classpath:logback.xml
+    
+    

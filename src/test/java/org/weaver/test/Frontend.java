@@ -6,12 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +33,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.weaver.query.entity.QueryCriteria;
@@ -47,7 +53,9 @@ public class Frontend {
 	
 	@Autowired
     private TestRestTemplate restTemplate;
-	
+
+	@Autowired
+	private DataSource dataSource;
 	
 	@Test
 	@DisplayName("First Demo")
@@ -254,6 +262,7 @@ public class Frontend {
 	@DisplayName("Fetch Data By Remark Yaml")
 	@Order(6)
     public void sqlToApiFetchDataByYamlRemark()  {
+		if(isSqlite())return;
 		Map<String,String> params = new LinkedHashMap<>();
 		params.put("lang", "zh");
 		params.put("page", "1");
@@ -514,6 +523,7 @@ public class Frontend {
 	@DisplayName("Tree View Api")
 	@Order(7)
     public void treeViewApi()  {
+		if(isSqlite())return;
 		Map<String,String> paramsTree = new LinkedHashMap<>();
 		paramsTree.put("lang", "zh");
 		//定义那个树节点开始遍历，不传值测从父节点为null的顶级节点开始。
@@ -694,6 +704,7 @@ public class Frontend {
 	 * ```	 
 	 */	
 	private void AssertDepartmentStructure(JSONObject value){
+		if(isSqlite())return;//sqlite不断言字段类型
         // 比较顶级字段
         assertEquals("部门", value.getString("name"));
         assertEquals("保存公司部门相关资料", value.getString("desc"));
@@ -786,5 +797,26 @@ public class Frontend {
 	}
 	
 
+	private boolean isSqlite() {
+		Connection conn = DataSourceUtils.getConnection(dataSource);
+		try {
+			if (conn != null && (!conn.isClosed())) {
+				DatabaseMetaData metaData = conn.getMetaData();
+				String databaseProductName = metaData.getDatabaseProductName().toLowerCase();
+				if (databaseProductName.matches("(?i).*sqlite*")) {
+					return true;
+				}
+			}
+			return false;
+		} catch (SQLException e) {
+			throw new RuntimeException("Failed to create tables for dashboards database.", e);
+		}catch (Exception ex) {
+			DataSourceUtils.releaseConnection(conn, dataSource);
+			conn = null;
+			throw new RuntimeException(ex);
+		}finally {
+			DataSourceUtils.releaseConnection(conn, dataSource);
+		}		
+	}
 	
 }

@@ -21,7 +21,7 @@
 	</licenses>
 	<groupId>org.weaver</groupId>
 	<artifactId>weaver-view-demo</artifactId>
-	<version>2.1.16</version>
+	<version>2.1.17</version>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -51,7 +51,11 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-		</dependency>				
+		</dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
@@ -78,7 +82,7 @@
         <dependency>
             <groupId>io.github.ryanyeung2019</groupId>
             <artifactId>weaver-view</artifactId>
-            <version>2.1.15</version>
+            <version>2.1.17</version>
         </dependency>
 	</dependencies>
 	<build>

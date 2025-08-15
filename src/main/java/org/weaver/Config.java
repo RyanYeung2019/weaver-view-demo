@@ -7,15 +7,17 @@ import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.jdbc.support.JdbcUtils;
+
 import com.alibaba.druid.pool.DruidDataSource;
 
 
@@ -48,39 +50,56 @@ public class Config{
 	}
 
     private void chkAndRunIniData(DataSource dataSource,String checkTable,String iniData){
-        try (Connection connection = dataSource.getConnection();
-        	Statement statement = connection.createStatement();
-        	InputStream sqlFile = this.getClass().getResourceAsStream(iniData);
-        	InputStreamReader sqlFileIs = new InputStreamReader(sqlFile,Charset.forName("UTF-8"));
-        	BufferedReader sqlReader = new BufferedReader(sqlFileIs)) {
-			DatabaseMetaData metaData = connection.getMetaData();
-			String[] cst = checkTable.split("[.]");
-
-            try (ResultSet tables = metaData.getTables(cst[0].isEmpty()?null:cst[0], cst[1].isEmpty()?null:cst[1], cst[2].isEmpty()?null:cst[2], null)) {
-//            	if(tables.next()) return;
-            }
-            StringBuilder sqlBuilder = new StringBuilder();
-            String line;
-            while ((line = sqlReader.readLine()) != null) {
-                line = line.trim();
-                if (!line.isEmpty() && !line.startsWith("--")) {
-                    sqlBuilder.append(line);
-                    if (line.endsWith(";")) {
-                        String sql = sqlBuilder.toString().replace(";", "");
-                        statement.execute(sql);
-                        sqlBuilder.setLength(0);
-                    }
-                }
-            }
-            if (sqlBuilder.length() > 0) {
-                String sql = sqlBuilder.toString();
-                statement.execute(sql);
-            }
-        }catch(Exception e) {
-        	e.printStackTrace();
-        	
-        	throw new RuntimeException(e);
-        }
+		Connection connection = DataSourceUtils.getConnection(dataSource);
+		Statement statement = null;
+		try {
+			 statement = connection.createStatement();
+			 try(InputStream sqlFile = this.getClass().getResourceAsStream(iniData);
+	        	InputStreamReader sqlFileIs = new InputStreamReader(sqlFile,Charset.forName("UTF-8"));
+	        	BufferedReader sqlReader = new BufferedReader(sqlFileIs)){
+					DatabaseMetaData metaData = connection.getMetaData();
+					String[] cst = checkTable.split("[.]");
+		            try (ResultSet tables = metaData.getTables(cst[0].isEmpty()?null:cst[0], cst[1].isEmpty()?null:cst[1], cst[2].isEmpty()?null:cst[2], null)) {
+//		            	if(tables.next()) return;
+		            }
+		            StringBuilder sqlBuilder = new StringBuilder();
+		            String line;
+		            while ((line = sqlReader.readLine()) != null) {
+		                line = line.trim();
+		                if (!line.isEmpty() && !line.startsWith("--")) {
+		                    sqlBuilder.append(line);
+		                    if (line.endsWith(";")) {
+		                    	try {
+		                            String sql = sqlBuilder.toString().replace(";", "");
+		                            statement.execute(sql);
+		                    	}catch(Exception e) {
+		                            	throw new RuntimeException(e);
+		                    	}
+		                        sqlBuilder.setLength(0);
+		                    }
+		                }
+		            }
+		            if (sqlBuilder.length() > 0) {
+		                String sql = sqlBuilder.toString();
+		                statement.execute(sql);
+		            }				 
+			 }catch(Exception e) {
+				 throw new RuntimeException(e);
+			 }
+		}catch (SQLException ex) {
+			JdbcUtils.closeStatement(statement);
+			statement = null;			
+			DataSourceUtils.releaseConnection(connection, dataSource);
+			connection = null;
+			log.error("error:",ex);
+        	if(!ex.getMessage().contains("already attached")) {
+            	throw new RuntimeException(ex);
+        	}			
+			throw new RuntimeException(ex);
+		}finally {
+			JdbcUtils.closeStatement(statement);
+			DataSourceUtils.releaseConnection(connection, dataSource);
+		}
         log.info("Data is initializated!");    	
     	
     }

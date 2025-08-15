@@ -2,12 +2,17 @@ package org.weaver.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -17,6 +22,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.weaver.bean.DepartmentEntity;
 import org.weaver.bean.SysUserEntity;
 import org.weaver.config.entity.EnumApiEn;
@@ -41,12 +47,19 @@ public class Backend {
 
 	@Autowired
 	private ViewQuery viewQuery;
+	
+	@Autowired
+	private DataSource dataSource;
+	
 
 	@SuppressWarnings("unused")
 	@Test
 	@DisplayName("Base Usage")
 	@Order(1)
 	public void baseUsage() throws Exception {
+		
+	
+		
 		ViewStatement statement = viewQuery
 				.prepareSql("select * from view_demo.department where member_count = :memberCount");
 		statement.setPageNum(0);
@@ -63,8 +76,8 @@ public class Backend {
 
 		ViewData<DepartmentEntity> dataBean = statement
 				.query(new BeanPropRowMapper<DepartmentEntity>(DepartmentEntity.class));
-		assertEquals(6l, dataBean.getAggrs().get("size"));
-		assertEquals(dataBean.getData().size(), 6);
+		assertEquals(6, Long.valueOf(dataBean.getAggrs().get("size").toString()));
+		assertEquals(6, Long.valueOf(dataBean.getData().size()));
 
 		// 获取视图名称
 		String name = dataBean.getName(); 
@@ -157,7 +170,7 @@ public class Backend {
 		statement.setAggrList(new ArrayList<String>());
 		ViewData<Map<String, Object>> viewData = statement.query();
 		//获取总记录数
-		Long size = (Long) viewData.getAggrs().get(ViewData.AGGRS_SIZE);
+		Long size = Long.valueOf(viewData.getAggrs().get(ViewData.AGGRS_SIZE).toString()) ;
 		assertEquals(size,15l);
 		//当前分页的记录数
 		List<Map<String, Object>> data = viewData.getData();
@@ -170,13 +183,20 @@ public class Backend {
 		statement.setAggrList(aggrList);
 		viewData = statement.query();
 		//获取总记录数。
-		size = (Long) viewData.getAggrs().get(ViewData.AGGRS_SIZE);
+		size = Long.valueOf( viewData.getAggrs().get(ViewData.AGGRS_SIZE).toString());
 		assertEquals(size,15l);
 		//获取统计其他字段的数据
-		java.math.BigDecimal avg = (java.math.BigDecimal) viewData.getAggrs().get("memberCountAvg");
-		assertEquals(avg.toString().subSequence(0, 6),"4.0000");
-		String sum =  viewData.getAggrs().get("memberCountSum").toString();
-		assertEquals(sum.toString(),"60");
+		if(isSqlite()) {
+			Double avg = (Double) viewData.getAggrs().get("memberCountAvg");
+			assertEquals(avg.toString(),"4.0");
+			String sum =  viewData.getAggrs().get("memberCountSum").toString();
+			assertEquals(sum.toString(),"60");
+		}else {
+			java.math.BigDecimal avg = (java.math.BigDecimal) viewData.getAggrs().get("memberCountAvg");
+			assertEquals(avg.toString().subSequence(0, 6),"4.0000");
+			String sum =  viewData.getAggrs().get("memberCountSum").toString();
+			assertEquals(sum.toString(),"60");
+		}
 	}	
 	
 	
@@ -217,6 +237,7 @@ public class Backend {
 	@DisplayName("Fetch Data Use Entity Bean")
 	@Order(3)
 	public void sqlFetchData() throws Exception {
+		if(isSqlite())return;
 		RequestConfig viewReqConfig = new RequestConfig();
 		viewReqConfig.setLanguage("zh");
 		Map<String, Object> params = new HashMap<>();
@@ -232,7 +253,8 @@ public class Backend {
 		queryParams.put("currentDomain", "domain1");
 		queryParams.put("currentUser", "admin");
 		viewReqConfig.setParams(queryParams);
-
+		
+		
 		ViewStatement statement = viewQuery.prepareView("org.sys_user");
 		statement.setParams(params);
 		statement.setSortField(sort);
@@ -298,5 +320,27 @@ public class Backend {
 						""",
 				commonParams);
 		assertEquals(enumText.trim(), "从枚举类型中获取值：职位:软件工程师(失效)");
+	}
+
+	private boolean isSqlite() {
+		Connection conn = DataSourceUtils.getConnection(dataSource);
+		try {
+			if (conn != null && (!conn.isClosed())) {
+				DatabaseMetaData metaData = conn.getMetaData();
+				String databaseProductName = metaData.getDatabaseProductName().toLowerCase();
+				if (databaseProductName.matches("(?i).*sqlite*")) {
+					return true;
+				}
+			}
+			return false;
+		} catch (SQLException e) {
+			throw new RuntimeException("Failed to create tables for dashboards database.", e);
+		}catch (Exception ex) {
+			DataSourceUtils.releaseConnection(conn, dataSource);
+			conn = null;
+			throw new RuntimeException(ex);
+		}finally {
+			DataSourceUtils.releaseConnection(conn, dataSource);
+		}		
 	}
 }

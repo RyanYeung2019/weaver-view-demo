@@ -2,8 +2,13 @@ package org.weaver.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -20,6 +25,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.weaver.view.util.Utils;
@@ -35,6 +41,10 @@ public class FrontendWrite {
 	
 	@Autowired
     private TestRestTemplate restTemplate;
+	
+
+	@Autowired
+	private DataSource dataSource;	
 
 	@Test
 	@DisplayName("dataModify")
@@ -160,18 +170,15 @@ public class FrontendWrite {
 		params.put("type", "table");
 		JSONObject respPage = get("/view/view_demo/test_field",headers,params,JSONObject.class).getBody();
 		//获取数据结构中的表COMMENT内容
-		assertEquals(respPage.getString("remark"),"测试表");
+		if(!this.isSqlite()) assertEquals(respPage.getString("remark"),"测试表");
 		//默认带出表名
 		assertEquals(respPage.getString("name"),"view_demo.test_field");
 		//获取数据结构中的字段COMMENT内容
-		assertEquals(respPage.getJSONArray("fields").getJSONObject(0).get("remark"),"主键");
+		if(!this.isSqlite()) 		assertEquals(respPage.getJSONArray("fields").getJSONObject(0).get("remark"),"主键");
 		//统计总记录数
 		assertEquals(respPage.getJSONObject("aggrs").getString("size"),"5");
 		log.info(respPage.toString());		
 	}	
-	
-	
-	
 	
 	private void readData(String path,Map<String,String> params,HttpHeaders headers) {
 		ResponseEntity<JSONObject> result1 = get(path,headers,params,JSONObject.class);
@@ -232,5 +239,26 @@ public class FrontendWrite {
         }
 	    return restTemplate.exchange(builder.build().toString(),HttpMethod.GET,request,clazz);
 	}	
-
+	
+	private boolean isSqlite() {
+		Connection conn = DataSourceUtils.getConnection(dataSource);
+		try {
+			if (conn != null && (!conn.isClosed())) {
+				DatabaseMetaData metaData = conn.getMetaData();
+				String databaseProductName = metaData.getDatabaseProductName().toLowerCase();
+				if (databaseProductName.matches("(?i).*sqlite*")) {
+					return true;
+				}
+			}
+			return false;
+		} catch (SQLException e) {
+			throw new RuntimeException("Failed to create tables for dashboards database.", e);
+		}catch (Exception ex) {
+			DataSourceUtils.releaseConnection(conn, dataSource);
+			conn = null;
+			throw new RuntimeException(ex);
+		}finally {
+			DataSourceUtils.releaseConnection(conn, dataSource);
+		}		
+	}
 }

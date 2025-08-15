@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.weaver.view.util.Utils;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -39,6 +38,7 @@ public class FrontEndBatchWrite {
 	@DisplayName("batchModify")
 	@Order(1)
 	public void dataModify() throws Exception {
+		
 		ResponseEntity<JSONArray> result1 = put("/table/view_demo/position",new HttpHeaders(),JSONArray.parseArray("""
 				[{
 				"domainKey":"domainKey1111",
