@@ -2,7 +2,8 @@ server:
   port: 8081
 spring:
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource  
+    type: com.alibaba.druid.pool.DruidDataSource
+      
     #url: jdbc:mysql://192.168.3.246:33068/sys?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
     #driver-class-name: com.mysql.cj.jdbc.Driver
     #username: root
@@ -19,7 +20,7 @@ spring:
     password: xxx
 logging:
   level:
-    root: info
+    org.weaver.service: debug
   config: classpath:logback.xml
     
     

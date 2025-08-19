@@ -5,6 +5,19 @@
   提供数据库级别的翻页，排序，搜索；简单配置即可实现对其他数据的引用，枚举，及多语言的支持。
   
   支持树遍历模式，将SQL查询语句转为树结构返回。
+  
+## 入门
+
+
+  * 下载源码
+  
+	
+  * 运行 org.weaver.RunApp 启动项目
+  
+	
+  * 浏览器打开Demo网址：http://localhost:8081/
+  
+
 
 ## 开始
 
@@ -14,7 +27,7 @@
   <dependency>
     <groupId>io.github.ryanyeung2019</groupId>
     <artifactId>weaver-view</artifactId>
-    <version>2.1.17</version>
+    <version>2.1.18</version>
   </dependency>
 ```
 
