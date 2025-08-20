@@ -6,6 +6,10 @@
   
   支持树遍历模式，将SQL查询语句转为树结构返回。
   
+## 在线测试
+
+	https://gitlab.ly.weaver-library.top/demo/index.html
+  
 ## 入门
 
 
@@ -15,7 +19,7 @@
   * 运行 org.weaver.RunApp 启动项目
   
 	
-  * 浏览器打开Demo网址：http://localhost:8081/
+  * 浏览器打开Demo网址：http://localhost:8081/demo/index.html
   
 
 

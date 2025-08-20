@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JavaScript 沙盒工具</title>
-    <!-- 引入CodeMirror作为代码编辑和高亮库 -->
+    <title>View API Demo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
-    <!-- 引入代码格式化库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-javascript.min.js"></script>
     
@@ -106,7 +104,7 @@
         }
         .run-btn {
             background: #4CAF50;
-            margin-left: auto; /* 自动填充左侧空间，使按钮靠右 */
+            margin-left: auto;
         }
         .clear-btn {
             background: #ff9800;
@@ -193,11 +191,10 @@
 <body>
     <div class="container">
         <header>
-            <h1>JavaScript 沙盒工具</h1>
+            <h1>View API Demo</h1>
         </header>
         
         <div class="main-content">
-            <!-- 左侧：代码片段 -->
             <div class="snippets-panel">
                 <div class="panel-header">代码片段库</div>
                 <div class="snippets-list" id="snippetsList">
@@ -227,8 +224,6 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- 中间：编辑器 -->
             <div class="editor-panel">
                 <div class="panel-header">代码编辑区</div>
                 <div class="editor-toolbar">
@@ -237,12 +232,9 @@
                     <button class="format-btn" id="formatBtn">格式化</button>
                     <button class="run-btn" id="runBtn">运行</button>
                 </div>
-                <!-- CodeMirror编辑器 -->
                 <textarea id="codeInput">// 示例代码
 console.log("Hello, JavaScript!");</textarea>
             </div>
-            
-            <!-- 右侧：结果 -->
             <div class="result-panel">
                 <div class="panel-header">执行结果</div>
                 <div class="result-content" id="resultOutput">
@@ -253,19 +245,16 @@ console.log("Hello, JavaScript!");</textarea>
     </div>
 
     <script>
-        // 初始化CodeMirror编辑器
         const editor = CodeMirror.fromTextArea(document.getElementById('codeInput'), {
-            mode: "javascript",          // 语法模式
-            theme: "dracula",            // 主题
-            lineNumbers: true,           // 显示行号
-            matchBrackets: true,         // 括号匹配
-            autoCloseBrackets: true,     // 自动闭合括号
-            indentUnit: 4,               // 缩进单位
-            indentWithTabs: false,       // 使用空格缩进
-            lineWrapping: true           // 默认换行
+            mode: "javascript",        
+            theme: "dracula",          
+            lineNumbers: true,       
+            matchBrackets: true,     
+            autoCloseBrackets: true, 
+            indentUnit: 4,           
+            indentWithTabs: false,   
+            lineWrapping: true       
         });
-
-        // 代码片段数据
         const codeSnippets = [
             `// 基础视图查询
 async function fetchData() {
@@ -273,8 +262,8 @@ async function fetchData() {
         console.log('# 查询视图，视图定义内容存放于“\\\\src\\\\main\\\\resources\\\\view\\\\demo\\\\query.sql”');
         console.log('  视图代码: demo.query,映射url路径/demo/query');
         console.log('  传入参数实现分页，排序，搜索，统计等功能');
-        const url = '/view/demo/query?domainKey=domain1&page=1&size=5&sort=domainKey-d,depKey-d&aggrs=';
-        console.log(\`  curl \${url}\`);
+        const url = '/demo/view/demo/query?domainKey=domain1&page=1&size=5&sort=domainKey-d,depKey-d&aggrs=';
+        console.log(\`  url: \${url}\`);
         const res = await fetch(url);
         const data = await res.json();
         console.log("# result:");
@@ -291,8 +280,8 @@ async function fetchData() {
         console.log('# 直接查询数据表');
         console.log('  表名: view_demo.department,映射url路径/view_demo/department');
         console.log('  传入参数实现分页，排序，搜索，统计等功能');
-        const url = '/view/view_demo/department?type=table&page=1&size=5&sort=domainKey-d,depKey-d&aggrs=';
-        console.log(\`  curl \${url}\`);
+        const url = '/demo/view/view_demo/department?type=table&page=1&size=5&sort=domainKey-d,depKey-d&aggrs=';
+        console.log(\`  url: \${url}\`);
         const res = await fetch(url);
         const data = await res.json();
         console.log("# result:");
@@ -361,8 +350,8 @@ async function fetchData() {
     };
     try {
         console.log("# 使用filter对数据进行过滤 ");
-        const url = \`/view/view_demo/department?\${searchParams.toString()}\`;
-        console.log(\`  curl \${url}\`);
+        const url = \`/demo/view/view_demo/department?\${searchParams.toString()}\`;
+        console.log(\`  url: \${url}\`);
         const res = await fetch(url);
         const data = await res.json();
         console.log("# result:");
@@ -378,8 +367,8 @@ fetchData();`,
 async function fetchData() {
     try {
         console.log('# 根据key字段读取数据表及其表结构');
-        const url = '/table/view_demo/department?domainKey=domain1&depKey=dep02';
-        console.log(\`  curl \${url}\`);
+        const url = '/demo/table/view_demo/department?domainKey=domain1&depKey=dep02';
+        console.log(\`  url: \${url}\`);
         const res = await fetch(url);
         const data = await res.json();
         console.log("# result:");
@@ -393,7 +382,7 @@ fetchData();`,
             
             `// 单条数据的CRUD
 async function runDataEdit() {
-    const insertResp = await commonReq('/table/view_demo/test_field', {
+    const insertResp = await commonReq('/demo/table/view_demo/test_field', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -404,13 +393,13 @@ async function runDataEdit() {
             createTime: "2025-07-30 12:12:12"
         })
     }, '插入一条记录', '返回记录内容，包括自增ID');
-    await commonReq('/table/view_demo/test_field?id=' + insertResp.id, {
+    await commonReq('/demo/table/view_demo/test_field?id=' + insertResp.id, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/table/view_demo/test_field', {
+    await commonReq('/demo/table/view_demo/test_field', {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -422,13 +411,13 @@ async function runDataEdit() {
             createTime: "2025-07-30 12:12:12"
         })
     }, '根据Key更新一条记录', '返回影响记录的数目');
-    await commonReq('/table/view_demo/test_field?id=' + insertResp.id, {
+    await commonReq('/demo/table/view_demo/test_field?id=' + insertResp.id, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/table/view_demo/test_field', {
+    await commonReq('/demo/table/view_demo/test_field', {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -446,11 +435,7 @@ async function commonReq(url, fetchOptions, reqDesc, respDesc) {
         const res = await fetch(url, fetchOptions);
         const data = await res.json();
         console.log('# ' + respDesc + ':');
-        if (fetchOptions.method == 'GET') {
-            console.log(JSON.stringify(data.data, null, 2));
-        } else {
-            console.log(JSON.stringify(data, null, 2));
-        }
+        console.log(JSON.stringify(data, null, 2));
         console.log('----------------------');
         return data;
     } catch (error) {
@@ -463,7 +448,7 @@ runDataEdit();`,
             
             `// 批量数据的编辑
 async function runBatchDataEdit() {
-    await commonReq('/table/view_demo/position', {
+    await commonReq('/demo/table/view_demo/position', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -490,13 +475,13 @@ async function runBatchDataEdit() {
             }
         ])
     }, '根据Key对数据进行跟新，有数据修改，没有数据插入', '返回影响记录的数目');
-    await commonReq('/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
+    await commonReq('/demo/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/table/view_demo/position', {
+    await commonReq('/demo/table/view_demo/position', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -523,13 +508,13 @@ async function runBatchDataEdit() {
             }
         ])
     }, '根据Key对数据进行跟新，有数据修改，没有数据插入', '返回影响记录的数目');
-    await commonReq('/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
+    await commonReq('/demo/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/table/view_demo/position', {
+    await commonReq('/demo/table/view_demo/position', {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -542,13 +527,13 @@ async function runBatchDataEdit() {
             "posName": "更新字段内容"
         })
     }, '根据字段domainKey,depKey跟新数据，断然最大影响记录数为3', '返回影响记录的数目');
-    await commonReq('/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
+    await commonReq('/demo/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/table/view_demo/position', {
+    await commonReq('/demo/table/view_demo/position', {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -617,22 +602,18 @@ async function fetchData() {
 // 执行请求
 fetchData();`
         ];
-
-        // 获取DOM元素
         const resultOutput = document.getElementById('resultOutput');
         const runBtn = document.getElementById('runBtn');
         const clearBtn = document.getElementById('clearBtn');
         const wrapBtn = document.getElementById('wrapBtn');
-        const formatBtn = document.getElementById('formatBtn'); // 格式化按钮
+        const formatBtn = document.getElementById('formatBtn'); 
         let isWrapping = true;
-        let pendingPromises = 0;  // 跟踪未完成的Promise数量
+        let pendingPromises = 0;
 
-        // 代码片段点击事件
         document.querySelectorAll('.snippet-item').forEach(item => {
             item.addEventListener('click', () => {
                 const index = item.getAttribute('data-index');
                 editor.setValue(codeSnippets[index]);
-                // 高亮当前选中的片段
                 document.querySelectorAll('.snippet-item').forEach(i => {
                     i.style.backgroundColor = '';
                 });
@@ -641,7 +622,6 @@ fetchData();`
             });
         });
 
-        // 清空按钮
         clearBtn.addEventListener('click', () => {
             editor.setValue('');
             document.querySelectorAll('.snippet-item').forEach(i => {
@@ -650,39 +630,32 @@ fetchData();`
             editor.focus();
         });
 
-        // 换行按钮
         wrapBtn.addEventListener('click', () => {
             isWrapping = !isWrapping;
             editor.setOption('lineWrapping', isWrapping);
             wrapBtn.textContent = isWrapping ? '换行' : '不换行';
         });
 
-        // 格式化按钮功能
         formatBtn.addEventListener('click', () => {
             try {
                 const unformattedCode = editor.getValue();
-                // 配置格式化选项
                 const options = {
-                    indent_size: 4,         // 缩进空格数
-                    indent_char: ' ',       // 缩进字符
-                    eol: '\n',              // 行结束符
-                    preserve_newlines: true, // 保留空行
-                    max_preserve_newlines: 2 // 最大保留空行数
+                    indent_size: 4,        
+                    indent_char: ' ',      
+                    eol: '\n',             
+                    preserve_newlines: true,
+                    max_preserve_newlines: 2
                 };
-                
-                // 格式化代码
                 const formattedCode = js_beautify(unformattedCode, options);
                 editor.setValue(formattedCode);
                 editor.focus();
-                
-                // 显示格式化成功信息
+
                 const infoLine = document.createElement('div');
                 infoLine.className = 'info';
                 infoLine.textContent = '代码格式化成功';
                 resultOutput.appendChild(infoLine);
                 resultOutput.scrollTop = resultOutput.scrollHeight;
             } catch (error) {
-                // 显示格式化错误信息
                 const errorLine = document.createElement('div');
                 errorLine.className = 'error';
                 errorLine.textContent = `格式化错误: ${error.message}`;
@@ -691,15 +664,12 @@ fetchData();`
             }
         });
 
-        // 运行代码
         runBtn.addEventListener('click', runCode);
         
-        // Ctrl+Enter运行代码
         editor.addKeyMap({
             "Ctrl-Enter": runCode
         });
 
-        // Ctrl+Shift+F格式化代码
         editor.addKeyMap({
             "Ctrl-Shift-F": function() {
                 formatBtn.click();
@@ -707,17 +677,15 @@ fetchData();`
         });
 
         async function runCode() {
-            // 重置结果区域
             resultOutput.innerHTML = '';
             pendingPromises = 0;
             
             const originalLog = console.log;
             const originalError = console.error;
             const originalPromise = window.Promise;
-            const originalFetch = window.fetch;  // 保存原始fetch方法
+            const originalFetch = window.fetch; 
             
             try {
-                // 重写console.log
                 console.log = function(...args) {
                     const line = document.createElement('pre');
                     line.textContent = args.join(' ');
@@ -725,7 +693,6 @@ fetchData();`
                     resultOutput.scrollTop = resultOutput.scrollHeight;
                 };
                 
-                // 重写console.error
                 console.error = function(...args) {
                     const line = document.createElement('pre');
                     line.className = 'error';
@@ -734,11 +701,9 @@ fetchData();`
                     resultOutput.scrollTop = resultOutput.scrollHeight;
                 };
                 
-                // 重写Promise以跟踪异步操作
                 window.Promise = function(executor) {
                     pendingPromises++;
                     updateExecutionStatus();
-                    
                     const promise = new originalPromise((resolve, reject) => {
                         executor(
                             (value) => {
@@ -757,22 +722,18 @@ fetchData();`
                     return promise;
                 };
                 
-                // 复制Promise的静态方法
                 window.Promise.all = originalPromise.all;
                 window.Promise.race = originalPromise.race;
                 window.Promise.resolve = originalPromise.resolve;
                 window.Promise.reject = originalPromise.reject;
 
-                // 重写fetch方法以增强日志输出
                 window.fetch = async function(url, options = {}) {
                     pendingPromises++;
                     updateExecutionStatus();
                     try {
-                        // 执行原始fetch
                         const response = await originalFetch(url, options);
                         return response;
                     } catch (error) {
-                        // 显示错误信息
                         const errorInfo = document.createElement('div');
                         errorInfo.className = 'fetch-error';
                         errorInfo.innerHTML = `<strong>Fetch错误:</strong> ${error.message}`;
@@ -785,18 +746,14 @@ fetchData();`
                     }
                 };
 
-                // 获取并执行代码
                 const code = editor.getValue();
                 
-                // 特别处理异步代码
                 const wrappedCode = `(async () => {
                     ${code}
                 })()`;
                 
-                // 执行代码并等待所有异步操作完成
                 await eval(wrappedCode);
                 
-                // 等待所有剩余的Promise完成
                 while (pendingPromises > 0) {
                     await new Promise(resolve => setTimeout(resolve, 100));
                 }
@@ -807,26 +764,21 @@ fetchData();`
                 errorLine.textContent = `错误: ${error.message}`;
                 resultOutput.appendChild(errorLine);
             } finally {
-                // 恢复原始对象
                 console.log = originalLog;
                 console.error = originalError;
                 window.Promise = originalPromise;
-                window.fetch = originalFetch;  // 恢复原始fetch方法
+                window.fetch = originalFetch;
                 
-                // 更新最终状态
                 updateExecutionStatus(true);
             }
         }
         
-        // 更新执行状态显示
         function updateExecutionStatus(isFinal = false) {
-            // 移除旧的状态元素
             const oldStatus = document.querySelector('.execution-status');
             if (oldStatus) {
                 oldStatus.remove();
             }
             
-            // 创建新的状态元素
             const statusElement = document.createElement('div');
             statusElement.className = 'execution-status';
             
@@ -843,7 +795,6 @@ fetchData();`
             resultOutput.scrollTop = resultOutput.scrollHeight;
         }
 
-        // 初始化编辑器高度
         editor.setSize(null, '100%');
     </script>
 </body>
