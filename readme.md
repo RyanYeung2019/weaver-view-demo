@@ -47,7 +47,7 @@ select * from view_demo.department where domain_key = :domainKey
   支持多语言，分页，排序，统计，搜索等
   
 ```shell  
-curl "http://localhost:8081/view/demo/query?domainKey=domain1&page=1&size=5&sort=domainKey-d,depKey-d&aggrs="
+curl "http://localhost:8081/demo/view/demo/query?domainKey=domain1&page=1&size=5&sort=domainKey-d,depKey-d&aggrs="
 ```
 
   返回内容：
