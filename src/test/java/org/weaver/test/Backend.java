@@ -61,7 +61,7 @@ public class Backend {
 	
 		
 		ViewStatement statement = viewQuery
-				.prepareSql("select * from view_demo.department where member_count = :memberCount");
+				.prepareSql("select * from department where member_count = :memberCount");
 		statement.setPageNum(0);
 		statement.setPageSize(15);
 		statement.setAggrList(new ArrayList<String>());
@@ -237,7 +237,6 @@ public class Backend {
 	@DisplayName("Fetch Data Use Entity Bean")
 	@Order(3)
 	public void sqlFetchData() throws Exception {
-		if(isSqlite())return;
 		RequestConfig viewReqConfig = new RequestConfig();
 		viewReqConfig.setLanguage("zh");
 		Map<String, Object> params = new HashMap<>();

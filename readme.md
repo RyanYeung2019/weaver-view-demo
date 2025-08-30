@@ -31,7 +31,7 @@
   <dependency>
     <groupId>io.github.ryanyeung2019</groupId>
     <artifactId>weaver-view</artifactId>
-    <version>2.1.19</version>
+    <version>2.1.20</version>
   </dependency>
 ```
 
@@ -39,7 +39,7 @@
   \src\main\resources\view\demo\query.sql
   
 ```sql
-select * from view_demo.department where domain_key = :domainKey
+select * from department where domain_key = :domainKey
 ```
 
   * 执行查询

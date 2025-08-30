@@ -82,7 +82,7 @@ public class Frontend {
 /*
  * 以下测试src/main/resources/view/department.sql文件中的内容：
  * ```SQL
- * select * from view_demo.department
+ * select * from department
  * ```
  * src/main/resources/view/department.sql 文件映射到 restfulApi的路径为：http://xxxx/view/department
  * 
@@ -249,12 +249,12 @@ public class Frontend {
     *   file: photo
     * meta:
     *   group: security
-    *   tables: view_demo.sys_user
+    *   tables: sys_user
     *   setting: for Backend
     * props:
     *   setting: for Backend and Frontend
     * *注解结束/
-    * select * from view_demo.sys_user
+    * select * from sys_user
     *   where domain_key = :currentDomain
     * ```
     */
@@ -262,7 +262,6 @@ public class Frontend {
 	@DisplayName("Fetch Data By Remark Yaml")
 	@Order(6)
     public void sqlToApiFetchDataByYamlRemark()  {
-		if(isSqlite())return;
 		Map<String,String> params = new LinkedHashMap<>();
 		params.put("lang", "zh");
 		params.put("page", "1");
@@ -496,7 +495,7 @@ public class Frontend {
 		 *    props中定义的属性前后端都可以访问，起到指导前端如何去处理返回数据的作用。
          * meta:
          *   group: security
-         *   tables: view_demo.sys_user
+         *   tables: sys_user
          *   setting: for Backend
          * props:
          *   setting: for Backend and Frontend
@@ -523,7 +522,6 @@ public class Frontend {
 	@DisplayName("Tree View Api")
 	@Order(7)
     public void treeViewApi()  {
-		if(isSqlite())return;
 		Map<String,String> paramsTree = new LinkedHashMap<>();
 		paramsTree.put("lang", "zh");
 		//定义那个树节点开始遍历，不传值测从父节点为null的顶级节点开始。

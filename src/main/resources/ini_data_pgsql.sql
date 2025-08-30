@@ -1,7 +1,6 @@
-DROP SCHEMA if exists view_demo CASCADE;
-create SCHEMA view_demo;
 
-CREATE TABLE view_demo.test_field
+DROP TABLE IF EXISTS test_field;
+CREATE TABLE test_field
 (
     id                                                                         SERIAL  ,
     dept_id              bigint                                                     NULL DEFAULT NULL,
@@ -16,20 +15,20 @@ CREATE TABLE view_demo.test_field
     PRIMARY KEY (id)
 );  
 
-COMMENT ON TABLE view_demo.test_field IS  '测试表'; 
-COMMENT ON COLUMN view_demo.test_field.id IS '主键';
-COMMENT ON COLUMN view_demo.test_field.dept_id IS '部门id';
-COMMENT ON COLUMN view_demo.test_field.user_id IS '用户id';
-COMMENT ON COLUMN view_demo.test_field.status IS '状态（0正常 1停用）';
-COMMENT ON COLUMN view_demo.test_field.del_flag IS '删除标志';
-COMMENT ON COLUMN view_demo.test_field.create_time IS '创建时间';
-COMMENT ON COLUMN view_demo.test_field.create_by IS '创建人';
-COMMENT ON COLUMN view_demo.test_field.update_time IS '更新时间';
-COMMENT ON COLUMN view_demo.test_field.update_by IS '更新人';
-COMMENT ON COLUMN view_demo.test_field.remark IS '备注';
+COMMENT ON TABLE test_field IS  '测试表'; 
+COMMENT ON COLUMN test_field.id IS '主键';
+COMMENT ON COLUMN test_field.dept_id IS '部门id';
+COMMENT ON COLUMN test_field.user_id IS '用户id';
+COMMENT ON COLUMN test_field.status IS '状态（0正常 1停用）';
+COMMENT ON COLUMN test_field.del_flag IS '删除标志';
+COMMENT ON COLUMN test_field.create_time IS '创建时间';
+COMMENT ON COLUMN test_field.create_by IS '创建人';
+COMMENT ON COLUMN test_field.update_time IS '更新时间';
+COMMENT ON COLUMN test_field.update_by IS '更新人';
+COMMENT ON COLUMN test_field.remark IS '备注';
 
-
-create table view_demo.sys_dict_data
+DROP TABLE IF EXISTS sys_dict_data;
+create table sys_dict_data
 (
     dict_code  SERIAL,
     dict_sort int4 default 0,
@@ -48,9 +47,8 @@ create table view_demo.sys_dict_data
     constraint sys_dict_data_pk primary key (dict_code)
 );
 
-
-
-create table view_demo.department(
+DROP TABLE IF EXISTS department;
+create table department(
     domain_key   character varying(100) NOT NULL,
 	dep_key      character varying(100) NOT NULL,
 	dep_name     character varying(100) NOT NULL,
@@ -63,7 +61,7 @@ create table view_demo.department(
 	PRIMARY KEY (domain_key,dep_key)
 );
 
-INSERT INTO view_demo.department (domain_key, dep_key, dep_name, member_count, stopped, create_time, create_user, update_time, update_user)
+INSERT INTO department (domain_key, dep_key, dep_name, member_count, stopped, create_time, create_user, update_time, update_user)
 VALUES 
 ('domain1', 'dep01', '行政管理部',5, null, NOW(), 'admin', NOW(), 'admin'),
 ('domain1', 'dep02', '业务拓展部',8, null, NOW(), 'admin', NOW(), 'admin'),
@@ -81,9 +79,8 @@ VALUES
 ('domain1', 'dep14', '前端开发小组',3, false, NOW(), 'admin', NOW(), 'admin'),
 ('domain1', 'dep15', '后端开发小组',3, false, NOW(), 'admin', NOW(), 'admin');
 
-
-
-create table view_demo.position(
+DROP TABLE IF EXISTS position;
+create table position(
   domain_key   character varying(100) NOT NULL,
   dep_key      character varying(100) NOT NULL,
   pos_key      character varying(100) NOT NULL,
@@ -95,17 +92,18 @@ create table view_demo.position(
   PRIMARY KEY (domain_key,dep_key,pos_key)
 );
 
-INSERT INTO view_demo.position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
+INSERT INTO position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
 VALUES 
 ('domain1', 'dep03', 'pos1', '开发组长', NOW(), 'admin', NOW(), 'admin'),
 ('domain1', 'dep03', 'pos2', '软件工程师', NOW(), 'admin', NOW(), 'admin');
 
-INSERT INTO view_demo.position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
+INSERT INTO position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
 VALUES 
 ('domain1', 'dep02', 'pos1', '后勤组长', NOW(), 'admin', NOW(), 'admin'),
 ('domain1', 'dep02', 'pos2', '后勤保障员', NOW(), 'admin', NOW(), 'admin');
 
-create table view_demo.sys_user(
+DROP TABLE IF EXISTS sys_user;
+create table sys_user(
   domain_key    character varying(100) NOT NULL,
   user_key      character varying(100) NOT NULL,
   parent_user   character varying(100) NULL,
@@ -122,7 +120,7 @@ create table view_demo.sys_user(
   PRIMARY KEY (user_key)
 );
 
-INSERT INTO view_demo.sys_user (domain_key, user_key, parent_user, user_name, department_id, position_id, status, remark, create_time, create_user, update_time, update_user)
+INSERT INTO sys_user (domain_key, user_key, parent_user, user_name, department_id, position_id, status, remark, create_time, create_user, update_time, update_user)
 VALUES 
 ('domain1', 'STF001',null, 'Horne', 'dep03', 'pos1', null,'', NOW(), 'admin', NOW(), 'admin'),
 ('domain1', 'STF002','STF001', 'Sharp', 'dep03', 'pos2', 'C','', NOW(), 'admin', NOW(), 'admin'),

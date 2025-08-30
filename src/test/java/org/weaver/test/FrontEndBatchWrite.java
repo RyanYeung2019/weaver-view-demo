@@ -39,7 +39,7 @@ public class FrontEndBatchWrite {
 	@Order(1)
 	public void dataModify() throws Exception {
 		
-		ResponseEntity<JSONArray> result1 = put("/table/view_demo/position",new HttpHeaders(),JSONArray.parseArray("""
+		ResponseEntity<JSONArray> result1 = put("/table/position",new HttpHeaders(),JSONArray.parseArray("""
 				[{
 				"domainKey":"domainKey1111",
 				"depKey":"depKey1111",
@@ -72,7 +72,7 @@ public class FrontEndBatchWrite {
 			}]
 		"""),JSONArray.class);
 
-		ResponseEntity<JSONObject> resultRead = get("/table/view_demo/position",
+		ResponseEntity<JSONObject> resultRead = get("/table/position",
 				new HttpHeaders(),Map.of("domainKey","domainKey1111",
 						"depKey","depKey1111",
 						"posKey","posKey3333"),
@@ -81,7 +81,7 @@ public class FrontEndBatchWrite {
 		
 		assertEquals(resultRead.getBody().getJSONObject("data").getString("posName"),"posName3333");
 		
-		result1 = put("/table/view_demo/position",new HttpHeaders(),JSONArray.parseArray("""
+		result1 = put("/table/position",new HttpHeaders(),JSONArray.parseArray("""
 				[{
 				"domainKey":"domainKey1111",
 				"depKey":"depKey1111",
@@ -115,7 +115,7 @@ public class FrontEndBatchWrite {
 		log.info(result1.getBody().toJSONString());
 		log.info(result1.getHeaders().toString());
 		
-		resultRead = get("/table/view_demo/position",
+		resultRead = get("/table/position",
 				new HttpHeaders(),Map.of("domainKey","domainKey1111",
 						"depKey","depKey1111",
 						"posKey","posKey3333"),
@@ -124,7 +124,7 @@ public class FrontEndBatchWrite {
 		
 		assertEquals(resultRead.getBody().getJSONObject("data").getString("posName"),"posName33332222");
 		
-		resultRead = get("/table/view_demo/position",
+		resultRead = get("/table/position",
 				new HttpHeaders(),Map.of("domainKey","domainKey1111",
 						"depKey","depKey1111",
 						"posKey","posKey2222"),
@@ -135,7 +135,7 @@ public class FrontEndBatchWrite {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("whereFields", "domainKey,depKey");
 		headers.add("assertMaxRecordAffected", "3");
-		ResponseEntity<Integer> patchResult = patch("/table/view_demo/position",headers,JSONObject.parseObject("""
+		ResponseEntity<Integer> patchResult = patch("/table/position",headers,JSONObject.parseObject("""
 				{
 					"domainKey":"domainKey1111",
 					"depKey":"depKey1111",
@@ -144,7 +144,7 @@ public class FrontEndBatchWrite {
 				"""),Integer.class);
 		assertEquals(patchResult.getBody(),3);
 		
-		resultRead = get("/table/view_demo/position",
+		resultRead = get("/table/position",
 				new HttpHeaders(),Map.of("domainKey","domainKey1111",
 						"depKey","depKey1111",
 						"posKey","posKey3333"),
@@ -152,7 +152,7 @@ public class FrontEndBatchWrite {
 		log.info(resultRead.getBody().toJSONString());	
 		assertEquals(resultRead.getBody().getJSONObject("data").getString("posName"),"posName99999999");
 		
-		ResponseEntity<Integer> deleteResult = delete("/table/view_demo/position",headers,JSONObject.parseObject("""
+		ResponseEntity<Integer> deleteResult = delete("/table/position",headers,JSONObject.parseObject("""
 				{
 					"domainKey":"domainKey1111",
 					"depKey":"depKey1111"

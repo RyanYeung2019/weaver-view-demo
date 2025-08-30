@@ -8,9 +8,9 @@ fields:
     stopped: department.field.stopped.enum
 meta:
   group: system
-  tables: view_demo.department
+  tables: department
 */
-select * from view_demo.department 
+select * from department 
   where domain_key = :currentDomain 
     and create_user = :currentUser 
     and (stopped = false or stopped is null)

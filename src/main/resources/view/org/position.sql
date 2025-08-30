@@ -11,9 +11,9 @@ fields:
     hidden: depKey
 meta:
   group: security
-  tables: view_demo.test_field
+  tables: test_field
 */
-select * from view_demo.position 
+select * from position 
   where domain_key = :currentDomain 
     and create_user = :currentUser 
     and dep_key = :depKey
