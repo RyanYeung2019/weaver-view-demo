@@ -51,7 +51,7 @@ public class BackendWrite {
 		requestConfig.getParams().put("status", "0");
 		requestConfig.getParams().put("delFlag", 0);
 	    
-		Integer affected = tableService.insertTable(null,"view_demo.test_field", testFieldEntity,requestConfig);
+		Integer affected = tableService.insertTable(null,"test_field", testFieldEntity,requestConfig);
 		log.info(testFieldEntity.toString());
 		log.info("affected:"+affected);
 		assertEquals(affected,1);
@@ -66,7 +66,7 @@ public class BackendWrite {
 		RequestConfig requestConfig = new RequestConfig();
 		requestConfig.getParams().put("updateBy", "ryan");
 		requestConfig.getParams().put("updateTime", new Date());
-		Integer affected = tableService.updateTable(null,"view_demo.test_field", testFieldEntity,requestConfig);
+		Integer affected = tableService.updateTable(null,"test_field", testFieldEntity,requestConfig);
 		log.info(testFieldEntity.toString());
 		log.info("affected:"+affected);
 		assertEquals(affected,1);
@@ -76,7 +76,7 @@ public class BackendWrite {
 		TestFieldEntity testFieldEntity = new TestFieldEntity();
 		testFieldEntity.setId(id);
 		RequestConfig requestConfig = new RequestConfig();
-		Integer affected = tableService.deleteTable(null,"view_demo.test_field", testFieldEntity,requestConfig);
+		Integer affected = tableService.deleteTable(null,"test_field", testFieldEntity,requestConfig);
 		log.info(testFieldEntity.toString());
 		log.info("affected:"+affected);
 		assertEquals(affected,1);

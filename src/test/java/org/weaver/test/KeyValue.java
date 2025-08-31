@@ -31,7 +31,7 @@ public class KeyValue {
 	@Order(1)
 	public void baseUsage() throws Exception {
 		KeyValueSettingEn keyValSetting = new KeyValueSettingEn(
-		        "view_demo.sys_dict_data",
+		        "sys_dict_data",
 		        "dict_value",
 		        "dict_label",
 		        new LinkedHashMap<String, Object>(){
@@ -56,7 +56,7 @@ public class KeyValue {
 	@Order(2)
 	public void extendUsage() throws Exception {
 		KeyValueSettingEn keyValSetting = new KeyValueSettingEn(
-		        "view_demo.sys_dict_data",
+		        "sys_dict_data",
 		        "dict_value",
 		        "dict_label",
 		        "create_time",

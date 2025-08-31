@@ -22,11 +22,11 @@ tree:
   search: userKey,userName
 meta:
   group: security
-  tables: view_demo.sys_user
+  tables: sys_user
   setting: for Backend
 props:
   setting: for Backend and Frontend
 */
-select * from view_demo.sys_user
+select * from sys_user
   where domain_key = :currentDomain
   and department_id = :departmentId

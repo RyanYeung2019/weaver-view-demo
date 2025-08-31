@@ -1,7 +1,5 @@
-ATTACH DATABASE 'database.db' AS view_demo;
-
-DROP TABLE IF EXISTS view_demo.test_field;
-CREATE TABLE view_demo.test_field
+DROP TABLE IF EXISTS test_field;
+CREATE TABLE test_field
 (
     id                   INTEGER PRIMARY KEY AUTOINCREMENT,
     dept_id              INTEGER                                                     NULL DEFAULT NULL,
@@ -16,8 +14,8 @@ CREATE TABLE view_demo.test_field
 );  
 
 
-DROP TABLE IF EXISTS view_demo.sys_dict_data;
-create table view_demo.sys_dict_data
+DROP TABLE IF EXISTS sys_dict_data;
+create table sys_dict_data
 (
     dict_code  SERIAL,
     dict_sort INTEGER default 0,
@@ -38,8 +36,8 @@ create table view_demo.sys_dict_data
 
 
 
-DROP TABLE IF EXISTS view_demo.department;
-create table view_demo.department(
+DROP TABLE IF EXISTS department;
+create table department(
     domain_key   VARCHAR(100) NOT NULL,
 	dep_key      VARCHAR(100) NOT NULL,
 	dep_name     VARCHAR(100) NOT NULL,
@@ -52,7 +50,7 @@ create table view_demo.department(
 	PRIMARY KEY (domain_key,dep_key)
 );
 
-INSERT INTO view_demo.department (domain_key, dep_key, dep_name, member_count, stopped, create_time, create_user, update_time, update_user)
+INSERT INTO department (domain_key, dep_key, dep_name, member_count, stopped, create_time, create_user, update_time, update_user)
 VALUES 
 ('domain1', 'dep01', '行政管理部',5, null, datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'dep02', '业务拓展部',8, null, datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
@@ -72,8 +70,8 @@ VALUES
 
 
 
-DROP TABLE IF EXISTS view_demo.position;
-create table view_demo.position(
+DROP TABLE IF EXISTS position;
+create table position(
   domain_key   VARCHAR(100) NOT NULL,
   dep_key      VARCHAR(100) NOT NULL,
   pos_key      VARCHAR(100) NOT NULL,
@@ -85,18 +83,18 @@ create table view_demo.position(
   PRIMARY KEY (domain_key,dep_key,pos_key)
 );
 
-INSERT INTO view_demo.position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
+INSERT INTO position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
 VALUES 
 ('domain1', 'dep03', 'pos1', '开发组长', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'dep03', 'pos2', '软件工程师', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin');
 
-INSERT INTO view_demo.position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
+INSERT INTO position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
 VALUES 
 ('domain1', 'dep02', 'pos1', '后勤组长', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'dep02', 'pos2', '后勤保障员', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin');
 
-DROP TABLE IF EXISTS view_demo.sys_user;
-create table view_demo.sys_user(
+DROP TABLE IF EXISTS sys_user;
+create table sys_user(
   domain_key    VARCHAR(100) NOT NULL,
   user_key      VARCHAR(100) NOT NULL,
   parent_user   VARCHAR(100) NULL,
@@ -113,7 +111,7 @@ create table view_demo.sys_user(
   PRIMARY KEY (user_key)
 );
 
-INSERT INTO view_demo.sys_user (domain_key, user_key, parent_user, user_name, department_id, position_id, status, remark, create_time, create_user, update_time, update_user)
+INSERT INTO sys_user (domain_key, user_key, parent_user, user_name, department_id, position_id, status, remark, create_time, create_user, update_time, update_user)
 VALUES 
 ('domain1', 'STF001',null, 'Horne', 'dep03', 'pos1', null,'', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'STF002','STF001', 'Sharp', 'dep03', 'pos2', 'C','', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),

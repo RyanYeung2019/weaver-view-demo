@@ -278,9 +278,9 @@ fetchData();`,
 async function fetchData() {
     try {
         console.log('# 直接查询数据表');
-        console.log('  表名: view_demo.department,映射url路径/view_demo/department');
+        console.log('  表名: department,映射url路径/department');
         console.log('  传入参数实现分页，排序，搜索，统计等功能');
-        const url = '/demo/view/view_demo/department?type=table&page=1&size=5&sort=domainKey-d,depKey-d&aggrs=';
+        const url = '/demo/view/department?type=table&page=1&size=5&sort=domainKey-d,depKey-d&aggrs=';
         console.log(\`  url: \${url}\`);
         const res = await fetch(url);
         const data = await res.json();
@@ -350,7 +350,7 @@ async function fetchData() {
     };
     try {
         console.log("# 使用filter对数据进行过滤 ");
-        const url = \`/demo/view/view_demo/department?\${searchParams.toString()}\`;
+        const url = \`/demo/view/department?\${searchParams.toString()}\`;
         console.log(\`  url: \${url}\`);
         const res = await fetch(url);
         const data = await res.json();
@@ -367,7 +367,7 @@ fetchData();`,
 async function fetchData() {
     try {
         console.log('# 根据key字段读取数据表及其表结构');
-        const url = '/demo/table/view_demo/department?domainKey=domain1&depKey=dep02';
+        const url = '/demo/table/department?domainKey=domain1&depKey=dep02';
         console.log(\`  url: \${url}\`);
         const res = await fetch(url);
         const data = await res.json();
@@ -382,7 +382,7 @@ fetchData();`,
             
             `// 单条数据的CRUD
 async function runDataEdit() {
-    const insertResp = await commonReq('/demo/table/view_demo/test_field', {
+    const insertResp = await commonReq('/demo/table/test_field', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -393,13 +393,13 @@ async function runDataEdit() {
             createTime: "2025-07-30 12:12:12"
         })
     }, '插入一条记录', '返回记录内容，包括自增ID');
-    await commonReq('/demo/table/view_demo/test_field?id=' + insertResp.id, {
+    await commonReq('/demo/table/test_field?id=' + insertResp.id, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/demo/table/view_demo/test_field', {
+    await commonReq('/demo/table/test_field', {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -411,13 +411,13 @@ async function runDataEdit() {
             createTime: "2025-07-30 12:12:12"
         })
     }, '根据Key更新一条记录', '返回影响记录的数目');
-    await commonReq('/demo/table/view_demo/test_field?id=' + insertResp.id, {
+    await commonReq('/demo/table/test_field?id=' + insertResp.id, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/demo/table/view_demo/test_field', {
+    await commonReq('/demo/table/test_field', {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -448,7 +448,7 @@ runDataEdit();`,
             
             `// 批量数据的编辑
 async function runBatchDataEdit() {
-    await commonReq('/demo/table/view_demo/position', {
+    await commonReq('/demo/table/position', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -475,13 +475,13 @@ async function runBatchDataEdit() {
             }
         ])
     }, '根据Key对数据进行跟新，有数据修改，没有数据插入', '返回影响记录的数目');
-    await commonReq('/demo/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
+    await commonReq('/demo/table/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/demo/table/view_demo/position', {
+    await commonReq('/demo/table/position', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -508,13 +508,13 @@ async function runBatchDataEdit() {
             }
         ])
     }, '根据Key对数据进行跟新，有数据修改，没有数据插入', '返回影响记录的数目');
-    await commonReq('/demo/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
+    await commonReq('/demo/table/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/demo/table/view_demo/position', {
+    await commonReq('/demo/table/position', {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -527,13 +527,13 @@ async function runBatchDataEdit() {
             "posName": "更新字段内容"
         })
     }, '根据字段domainKey,depKey跟新数据，断然最大影响记录数为3', '返回影响记录的数目');
-    await commonReq('/demo/table/view_demo/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
+    await commonReq('/demo/table/position?domainKey=domainKey1111&depKey=depKey1111&posKey=posKey2222', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     }, '根据Key读取一条记录', '返回记录内容');
-    await commonReq('/demo/table/view_demo/position', {
+    await commonReq('/demo/table/position', {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',

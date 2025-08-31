@@ -9,6 +9,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class Config{
 		dataSource.setUsername(username);
 		dataSource.setPassword(password);
 		dataSource.setDriverClassName(driverClassName);
-		chkAndRunIniData(dataSource,"view_demo.view_demo.department","/ini_data.sql");
+		chkAndRunIniData(dataSource,"department","/ini_data.sql");
 		return dataSource;
 	}
 
@@ -58,8 +59,17 @@ public class Config{
 	        	InputStreamReader sqlFileIs = new InputStreamReader(sqlFile,Charset.forName("UTF-8"));
 	        	BufferedReader sqlReader = new BufferedReader(sqlFileIs)){
 					DatabaseMetaData metaData = connection.getMetaData();
-					String[] cst = checkTable.split("[.]");
-		            try (ResultSet tables = metaData.getTables(cst[0].isEmpty()?null:cst[0], cst[1].isEmpty()?null:cst[1], cst[2].isEmpty()?null:cst[2], null)) {
+		    		String[] tableArray = checkTable.split("[.]");
+		    		String catalog = connection.getCatalog();
+		    		String database = null;
+		    		String tableName = null;
+		    		if(tableArray.length==1) {
+		        		tableName = tableArray[0];
+		    		}else {
+		    			catalog = tableArray[0];
+		        		tableName = tableArray[1];
+		    		}
+		        	try(ResultSet tables = metaData.getTables(catalog, database,tableName,null)){					
 //		            	if(tables.next()) return;
 		            }
 		            StringBuilder sqlBuilder = new StringBuilder();
@@ -71,6 +81,7 @@ public class Config{
 		                    if (line.endsWith(";")) {
 		                    	try {
 		                            String sql = sqlBuilder.toString().replace(";", "");
+		                            log.debug(sql);
 		                            statement.execute(sql);
 		                    	}catch(Exception e) {
 		                            	throw new RuntimeException(e);

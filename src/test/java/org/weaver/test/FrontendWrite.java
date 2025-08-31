@@ -52,15 +52,15 @@ public class FrontendWrite {
 	public void dataModify() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("datasource", "dataSource");
-		int id = insertData("/table/view_demo/test_field",JSONObject.parseObject("""
+		int id = insertData("/table/test_field",JSONObject.parseObject("""
 					{
 					"deptId":111,
 					"userId":111,
 					"createTime":"2025-07-30 12:12:12"
 				}
 				"""), headers);
-		readData("/table/view_demo/test_field",Map.of("id",String.valueOf(id)),headers);
-		updateTest("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
+		readData("/table/test_field",Map.of("id",String.valueOf(id)),headers);
+		updateTest("/table/test_field",JSONObject.parseObject(String.format("""
 				{
 				"id":%d,
 				"deptId":5555,
@@ -68,40 +68,40 @@ public class FrontendWrite {
 				"createTime":"2025-07-30 12:12:12"
 			}
 			""",id)),headers);
-		deleteTest("/table/view_demo/test_field",JSONObject.parseObject(String.format("""
+		deleteTest("/table/test_field",JSONObject.parseObject(String.format("""
 				{
 				"id":%d
 			}
 			""",id)),headers);	
-		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
+		insertData("/table/test_field",JSONObject.parseObject("""
 				{
 				"deptId":222,
 				"userId":222,
 				"createTime":"2025-07-30 12:12:12"
 			}
 			"""), headers);		
-		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
+		insertData("/table/test_field",JSONObject.parseObject("""
 				{
 				"deptId":333,
 				"userId":333,
 				"createTime":"2025-07-30 12:12:12"
 			}
 			"""), headers);		
-		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
+		insertData("/table/test_field",JSONObject.parseObject("""
 				{
 				"deptId":444,
 				"userId":444,
 				"createTime":"2025-07-30 12:12:12"
 			}
 			"""), headers);		
-		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
+		insertData("/table/test_field",JSONObject.parseObject("""
 				{
 				"deptId":555,
 				"userId":555,
 				"createTime":"2025-07-30 12:12:12"
 			}
 			"""), headers);		
-		insertData("/table/view_demo/test_field",JSONObject.parseObject("""
+		insertData("/table/test_field",JSONObject.parseObject("""
 				{
 				"deptId":666,
 				"userId":666,
@@ -116,7 +116,7 @@ public class FrontendWrite {
 	public void dataModifyMultipleKeys() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("datasource", "dataSource");
-		insertData("/table/view_demo/position",JSONObject.parseObject("""
+		insertData("/table/position",JSONObject.parseObject("""
 					{
 					"domainKey":"domainKey1111",
 					"depKey":"depKey1111",
@@ -129,13 +129,13 @@ public class FrontendWrite {
 				}
 				"""), headers);
 		
-		readData("/table/view_demo/position",
+		readData("/table/position",
 				Map.of(
 						"domainKey","domainKey1111",
 						"depKey","depKey1111",
 						"posKey","posKey1111"),headers);
 		
-		updateTest("/table/view_demo/position",JSONObject.parseObject("""
+		updateTest("/table/position",JSONObject.parseObject("""
 				{
 					"domainKey":"domainKey1111",
 					"depKey":"depKey1111",
@@ -148,7 +148,7 @@ public class FrontendWrite {
 			}
 			"""),headers);
 		
-		deleteTest("/table/view_demo/position",JSONObject.parseObject("""
+		deleteTest("/table/position",JSONObject.parseObject("""
 				{
 					"domainKey":"domainKey1111",
 					"depKey":"depKey1111",
@@ -168,11 +168,11 @@ public class FrontendWrite {
 		params.put("sort", "deptId-d");
 		params.put("aggrs", "_");
 		params.put("type", "table");
-		JSONObject respPage = get("/view/view_demo/test_field",headers,params,JSONObject.class).getBody();
+		JSONObject respPage = get("/view/test_field",headers,params,JSONObject.class).getBody();
 		//获取数据结构中的表COMMENT内容
 		if(!this.isSqlite()) assertEquals(respPage.getString("remark"),"测试表");
 		//默认带出表名
-		assertEquals(respPage.getString("name"),"view_demo.test_field");
+		assertEquals(respPage.getString("name"),"test_field");
 		//获取数据结构中的字段COMMENT内容
 		if(!this.isSqlite()) 		assertEquals(respPage.getJSONArray("fields").getJSONObject(0).get("remark"),"主键");
 		//统计总记录数
