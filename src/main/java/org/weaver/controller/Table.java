@@ -86,6 +86,8 @@ public class Table {
 		havePermission(table,"edit");
 		String datasource = request.getHeader("datasource");
 		RequestConfig reqConfig = new RequestConfig();
+		tableService.setTableReqConfig(reqConfig);
+		//以下值当提交数据没有赋值情况下才会自动补上。
         reqConfig.getParams().put("createBy", LoginHelper.getUsername());
         reqConfig.getParams().put("createTime", new Date());
         reqConfig.getParams().put("status", "0");
