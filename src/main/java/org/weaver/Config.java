@@ -46,7 +46,7 @@ public class Config{
 		dataSource.setUsername(username);
 		dataSource.setPassword(password);
 		dataSource.setDriverClassName(driverClassName);
-		chkAndRunIniData(dataSource,"view_demo.department","/ini_data.sql");
+		chkAndRunIniData(dataSource,"department","/ini_data.sql");
 		return dataSource;
 	}
 
@@ -59,6 +59,7 @@ public class Config{
 	        	InputStreamReader sqlFileIs = new InputStreamReader(sqlFile,Charset.forName("UTF-8"));
 	        	BufferedReader sqlReader = new BufferedReader(sqlFileIs)){
 					DatabaseMetaData metaData = connection.getMetaData();
+					log.info("connected:"+metaData.getURL());
 		    		String[] tableArray = checkTable.split("[.]");
 		    		String catalog = connection.getCatalog();
 		    		String database = null;

@@ -30,7 +30,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/table/")
 public class Table {
 
-	private static final Logger log = LoggerFactory.getLogger(View.class);
+	private static final Logger log = LoggerFactory.getLogger(Table.class);
 
 	@Autowired
 	private TableService tableService;
@@ -43,6 +43,7 @@ public class Table {
 			@RequestParam Map<String,Object> data
 			) throws Exception{
 		RequestConfig reqConfig = new RequestConfig();
+		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"list");		
 		String datasource = request.getHeader("datasource");
@@ -60,6 +61,8 @@ public class Table {
 			@RequestBody Map<String,Object> data
 			){
 		RequestConfig reqConfig = new RequestConfig();
+		
+		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"add");
 		String datasource = request.getHeader("datasource");
@@ -86,7 +89,7 @@ public class Table {
         reqConfig.getParams().put("createBy", LoginHelper.getUsername());
         reqConfig.getParams().put("createTime", new Date());
         reqConfig.getParams().put("status", "0");
-        reqConfig.getParams().put("delFlag", 0);	
+        reqConfig.getParams().put("delFlag", 0);		
         reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
         reqConfig.getParams().put("updateTime", new Date());
 		int[] result = tableService.persistenTableBatch(datasource,table, datas,reqConfig);
@@ -104,6 +107,7 @@ public class Table {
 		String whereFields = request.getHeader("whereFields");
 		String assertMaxRecordAffected = request.getHeader("assertMaxRecordAffected");
 		RequestConfig reqConfig = new RequestConfig();
+		tableService.setTableReqConfig(reqConfig);
         reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
         reqConfig.getParams().put("updateTime", new Date());        
 		Integer result = 0;
@@ -124,6 +128,7 @@ public class Table {
 			@RequestBody Map<String,Object> data
 			){
 		RequestConfig reqConfig = new RequestConfig();
+		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"remove");
 		String datasource = request.getHeader("datasource");
