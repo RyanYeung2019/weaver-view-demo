@@ -38,7 +38,11 @@ public class ModifyDataWithTrx {
 		tableService.setTableReqConfig(reqConfig);
 		String actionId = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(actionId,"edit");
-		String datasource = request.getHeader("datasource");
+		String datasource = request.getHeader(Table.HEADER_DATA_SOURCE);
+        reqConfig.getParams().put("createBy", LoginHelper.getUsername());
+        reqConfig.getParams().put("createTime", new Date());
+        reqConfig.getParams().put("status", "0");
+        reqConfig.getParams().put("delFlag", 0);
         reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
         reqConfig.getParams().put("updateTime", new Date());
         tableService.modifyDataWithTrx(datasource, updateCommands, reqConfig);

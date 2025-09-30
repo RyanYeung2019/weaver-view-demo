@@ -31,6 +31,12 @@ import jakarta.servlet.http.HttpServletRequest;
 public class Table {
 
 	private static final Logger log = LoggerFactory.getLogger(Table.class);
+	
+	private static final String HEADER_WHERE_FIELDS = "whereFields";
+
+	private static final String HEADER_ASSERT_MAX_RECORD_AFFECTED = "assertMaxRecordAffected";
+	
+	static final String HEADER_DATA_SOURCE = "dataSource";
 
 	@Autowired
 	private TableService tableService;
@@ -46,7 +52,7 @@ public class Table {
 		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"list");		
-		String datasource = request.getHeader("datasource");
+		String datasource = request.getHeader(HEADER_DATA_SOURCE);
 		Date startTime = new Date();
 		JSONObject tableInfo = tableService.readTable(datasource, table, data, reqConfig);
 		tableInfo.put("data", data);
@@ -65,7 +71,7 @@ public class Table {
 		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"add");
-		String datasource = request.getHeader("datasource");
+		String datasource = request.getHeader(HEADER_DATA_SOURCE);
         reqConfig.getParams().put("createBy", LoginHelper.getUsername());
         reqConfig.getParams().put("createTime", new Date());
         reqConfig.getParams().put("status", "0");
@@ -79,15 +85,15 @@ public class Table {
 	@PutMapping("**")
 	public ResponseEntity<int[]> persistenTableBatch(
 			HttpServletRequest request,
-			@RequestBody List<Map<String,Object>> datas			
+			@RequestBody List<Map<String,Object>> datas
 			){
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"add");
 		havePermission(table,"edit");
-		String datasource = request.getHeader("datasource");
+		String datasource = request.getHeader(HEADER_DATA_SOURCE);
 		RequestConfig reqConfig = new RequestConfig();
 		tableService.setTableReqConfig(reqConfig);
-		//以下值当提交数据没有赋值情况下才会自动补上。
+		//当提交数据没有赋值情况下才会自动补上以下值
         reqConfig.getParams().put("createBy", LoginHelper.getUsername());
         reqConfig.getParams().put("createTime", new Date());
         reqConfig.getParams().put("status", "0");
@@ -105,9 +111,9 @@ public class Table {
 			){
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"edit");
-		String datasource = request.getHeader("datasource");
-		String whereFields = request.getHeader("whereFields");
-		String assertMaxRecordAffected = request.getHeader("assertMaxRecordAffected");
+		String datasource = request.getHeader(HEADER_DATA_SOURCE);
+		String whereFields = request.getHeader(HEADER_WHERE_FIELDS);
+		String assertMaxRecordAffected = request.getHeader(HEADER_ASSERT_MAX_RECORD_AFFECTED);
 		RequestConfig reqConfig = new RequestConfig();
 		tableService.setTableReqConfig(reqConfig);
         reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
@@ -133,9 +139,9 @@ public class Table {
 		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"remove");
-		String datasource = request.getHeader("datasource");
-		String whereFields = request.getHeader("whereFields");
-		String assertMaxRecordAffected = request.getHeader("assertMaxRecordAffected");
+		String datasource = request.getHeader(HEADER_DATA_SOURCE);
+		String whereFields = request.getHeader(HEADER_WHERE_FIELDS);
+		String assertMaxRecordAffected = request.getHeader(HEADER_ASSERT_MAX_RECORD_AFFECTED);
 		Integer result = 0;
 		if(whereFields!=null && assertMaxRecordAffected!=null) {
 			String[] fields = whereFields.split(",");
