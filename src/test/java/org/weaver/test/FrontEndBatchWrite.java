@@ -32,8 +32,9 @@ public class FrontEndBatchWrite {
 	private static final Logger log = LoggerFactory.getLogger(FrontendWrite.class);
 	
 	@Autowired
-    private TestRestTemplate restTemplate;
-	
+	private TestRestTemplate restTemplate;
+
+
 	@Test
 	@DisplayName("batchModify")
 	@Order(1)

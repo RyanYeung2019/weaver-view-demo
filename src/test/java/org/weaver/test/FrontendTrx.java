@@ -1,18 +1,10 @@
 package org.weaver.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -24,19 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayName("FrontendTrx")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FrontendTrx {
-	private static final Logger log = LoggerFactory.getLogger(FrontendTrx.class);
 	
 	@Autowired
     private TestRestTemplate restTemplate;
-
-	@Autowired
-	private DataSource dataSource;	
 
 	@Test
 	@DisplayName("modifyDataWithTrx")
