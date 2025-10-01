@@ -1,6 +1,7 @@
 package org.weaver.controller;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,15 +40,34 @@ public class ModifyDataWithTrx {
 		String actionId = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(actionId,"edit");
 		String datasource = request.getHeader(Table.HEADER_DATA_SOURCE);
-        reqConfig.getParams().put("createBy", LoginHelper.getUsername());
-        reqConfig.getParams().put("createTime", new Date());
-        reqConfig.getParams().put("status", "0");
-        reqConfig.getParams().put("delFlag", 0);
-        reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
-        reqConfig.getParams().put("updateTime", new Date());
+		Map<String, Object> params = getSystemInfoForParams();
+		params.put("createBy", LoginHelper.getUsername());
+		params.put("createTime", new Date());
+		params.put("status", "0");
+		params.put("delFlag", 0);
+		params.put("updateBy", LoginHelper.getUsername());
+		params.put("updateTime", new Date());
+		reqConfig.setParams(params);
         tableService.modifyDataWithTrx(datasource, updateCommands, reqConfig);
 		return new ResponseEntity<>(updateCommands, HttpStatus.OK);
 	}
+	
+	private Map<String, Object> getSystemInfoForParams() {
+        Map<String, Object> params = new HashMap<>();
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        Long userId = loginUser.getUserId();
+        String userName = loginUser.getUsername();
+        Long deptId = loginUser.getDeptId();
+        Long workshopId = loginUser.getWorkshopId();
+        String nickName = LoginHelper.getNickName();
+        params.put("currentUserId",userId);
+        params.put("currentUserName",userName);
+        params.put("currentNickName", nickName);
+        params.put("currentDeptId",deptId);
+        params.put("currentWorkshopId",workshopId);
+        params.put("currentDate", new Date());		
+        return params;
+	}	
 	
     private void havePermission(String tableName,String action){
         log.info(String.format("find permission mapping for '%s' action '%s'",tableName,action));

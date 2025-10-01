@@ -2,6 +2,10 @@ package org.weaver.controller;
 
 public class LoginHelper {
 
+	public static String getNickName() {
+		return "Ryan Yeung";
+	}
+	
 	public static String getUsername() {
 		return "Ryan";
 	}

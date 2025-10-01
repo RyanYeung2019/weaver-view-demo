@@ -1,6 +1,7 @@
 package org.weaver.controller;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,15 +68,16 @@ public class Table {
 			@RequestBody Map<String,Object> data
 			){
 		RequestConfig reqConfig = new RequestConfig();
-		
 		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"add");
 		String datasource = request.getHeader(HEADER_DATA_SOURCE);
-        reqConfig.getParams().put("createBy", LoginHelper.getUsername());
-        reqConfig.getParams().put("createTime", new Date());
-        reqConfig.getParams().put("status", "0");
-        reqConfig.getParams().put("delFlag", 0);	
+		Map<String, Object> params = getSystemInfoForParams();
+		params.put("createBy", params.get("currentNickName"));
+		params.put("createTime", params.get("currentDate"));
+		params.put("status", "0");
+		params.put("delFlag", 0);
+		reqConfig.setParams(params);
 		Integer result = tableService.insertTable(datasource, table, data, reqConfig);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("rows-affected", result.toString());
@@ -93,13 +95,15 @@ public class Table {
 		String datasource = request.getHeader(HEADER_DATA_SOURCE);
 		RequestConfig reqConfig = new RequestConfig();
 		tableService.setTableReqConfig(reqConfig);
+		Map<String, Object> params = getSystemInfoForParams();
 		//当提交数据没有赋值情况下才会自动补上以下值
-        reqConfig.getParams().put("createBy", LoginHelper.getUsername());
-        reqConfig.getParams().put("createTime", new Date());
-        reqConfig.getParams().put("status", "0");
-        reqConfig.getParams().put("delFlag", 0);		
-        reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
-        reqConfig.getParams().put("updateTime", new Date());
+		params.put("createBy", params.get("currentNickName"));
+		params.put("createTime", params.get("currentDate"));
+		params.put("status", "0");
+		params.put("delFlag", 0);		
+		params.put("updateBy", params.get("currentNickName"));
+		params.put("updateTime", new Date());
+		reqConfig.setParams(params);
 		int[] result = tableService.persistenTableBatch(datasource,table, datas,reqConfig);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -116,16 +120,16 @@ public class Table {
 		String assertMaxRecordAffected = request.getHeader(HEADER_ASSERT_MAX_RECORD_AFFECTED);
 		RequestConfig reqConfig = new RequestConfig();
 		tableService.setTableReqConfig(reqConfig);
-        reqConfig.getParams().put("updateBy", LoginHelper.getUsername());
-        reqConfig.getParams().put("updateTime", new Date());        
+		Map<String, Object> params = getSystemInfoForParams();
+		params.put("updateBy", params.get("currentNickName"));
+		params.put("updateTime", params.get("currentDate"));        
+		reqConfig.setParams(params);
 		Integer result = 0;
 		if(whereFields!=null && assertMaxRecordAffected!=null) {
 			String[] fields = whereFields.split(",");
 			result = tableService.updateTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
-			
 		}else {
 			result = tableService.updateTable(datasource,table,data,reqConfig);
-			
 		}
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -150,6 +154,23 @@ public class Table {
 			result = tableService.deleteTable(datasource,table,data,reqConfig);
 		}
 		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	private Map<String, Object> getSystemInfoForParams() {
+		Map<String, Object> params = new HashMap<>();
+        LoginUser loginUser = LoginHelper.getLoginUser();
+        Long userId = loginUser.getUserId();
+        String userName = loginUser.getUsername();
+        Long deptId = loginUser.getDeptId();
+        Long workshopId = loginUser.getWorkshopId();
+        String nickName = LoginHelper.getNickName();
+        params.put("currentUserId",userId);
+        params.put("currentUserName",userName);
+        params.put("currentNickName", nickName);
+        params.put("currentDeptId",deptId);
+        params.put("currentWorkshopId",workshopId);
+        params.put("currentDate", new Date());		
+        return params;
 	}
 	
     private void havePermission(String tableName,String action){
