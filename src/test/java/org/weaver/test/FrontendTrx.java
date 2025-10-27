@@ -31,22 +31,25 @@ public class FrontendTrx {
 	public void modifyDataWithTrx() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("datasource", "dataSource");
-		insertData("/modifyDataWithTrx/approveAction",JSONArray.parseArray("""
+
+		//roll back case
+		trxData("/modifyDataWithTrx/approveAction",JSONArray.parseArray("""
 				[
 				    {
+				       
 				        "command": "insert",
 				        "tableName": "view_demo.test_field",
 				        "data": {
 				            "deptId": 111,
-				            "userId": 111,
-				            "createTime": "2025-07-30 12:12:12"
+				            "userId": 333,
+				            "createTime": "{{currentDate}}"
 				        }
 				    },
 				    {
 				        "command": "insert",
 				        "tableName": "view_demo.test_field",
 				        "data": {
-				            "deptId": 222,
+				            "deptId": 111,
 				            "userId": "33中文33",
 				            "createTime": "2025-07-30 12:12:12"
 				        }
@@ -54,11 +57,40 @@ public class FrontendTrx {
 				]
 			"""),headers);
 		
+		trxData("/modifyDataWithTrx/approveAction",JSONArray.parseArray("""
+				[
+				    {
+				        "command": "insert",
+				        "tableName": "view_demo.test_field",
+				        "data": {
+				            "deptId": 222,
+				            "userId": 333,
+				            "remark": "currentNickName: {{currentNickName}}",
+				            "createTime": "{{currentDate}}"
+				        }
+				    },
+				    {
+				        "command": "insert",
+				        "tableName": "view_demo.test_field",
+				        "data": {
+				            "deptId": 222,
+				            "userId": 111,
+				            "remark": "currentNickName: {{currentNickName}}",
+				            "createTime": "2025-07-30 12:12:12"
+				        }
+				    }
+				]
+			"""),headers);		
+		
+		
+
+				
+		
 		//readData("/table/view_demo/test_field",Map.of("id",String.valueOf(id)),headers);
 		
 	}
 	
-	private void insertData(String path,JSONArray params,HttpHeaders headers) {
+	private void trxData(String path,JSONArray params,HttpHeaders headers) {
 		ResponseEntity<Object> result1 = post(path,headers,params,Object.class);
 		System.out.println(result1.getBody());
 	}

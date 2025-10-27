@@ -49,6 +49,10 @@ public class KeyValue {
 		keyValueService.setValue(keyValSetting, "key","value1");
 		log.info(keyValueService.getValue(keyValSetting, "key"));
 		assertEquals(keyValueService.getValue(keyValSetting, "key"),"value1");
+		
+		assertEquals(keyValueService.getNextSerialId(keyValSetting,"mySerialId"),1l);
+		assertEquals(keyValueService.getNextSerialId(keyValSetting,"mySerialId"),2l);
+		assertEquals(keyValueService.getNextSerialId(keyValSetting,"mySerialId"),3l);
 	}
 	
 	@Test
