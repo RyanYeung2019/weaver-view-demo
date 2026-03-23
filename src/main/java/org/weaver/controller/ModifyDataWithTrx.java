@@ -41,12 +41,6 @@ public class ModifyDataWithTrx {
 		havePermission(actionId,"edit");
 		String datasource = request.getHeader(Table.HEADER_DATA_SOURCE);
 		Map<String, Object> params = getSystemInfoForParams();
-		params.put("createBy", LoginHelper.getUsername());
-		params.put("createTime", new Date());
-		params.put("status", "0");
-		params.put("delFlag", 0);
-		params.put("updateBy", LoginHelper.getUsername());
-		params.put("updateTime", new Date());
 		reqConfig.setParams(params);
         tableService.modifyDataWithTrx(datasource, updateCommands, reqConfig);
 		return new ResponseEntity<>(updateCommands, HttpStatus.OK);

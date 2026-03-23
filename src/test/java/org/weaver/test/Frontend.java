@@ -530,7 +530,8 @@ public class Frontend {
 		paramsTree.put("value", "STF001");
 		//遍历深度为三层，不传值会完全遍历到最末端
 		paramsTree.put("level", "3");
-		//每一层节点的排序方式
+		//每一层节点的排序方式,
+		//不传此参数返回根到当前节点的路径,有lookdown,没有lookup
 		paramsTree.put("sort", "userKey-d");
 		//在多个字段中搜索数据
 		paramsTree.put("search", "Hahn");
