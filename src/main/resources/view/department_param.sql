@@ -1,1 +1,3 @@
-select * from view_demo.department where dep_key = :depKey
+select *
+from view_demo.department
+where dep_key = :depKey

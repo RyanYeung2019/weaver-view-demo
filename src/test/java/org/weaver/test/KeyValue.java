@@ -30,6 +30,8 @@ public class KeyValue {
 	@DisplayName("Base Usage")
 	@Order(1)
 	public void baseUsage() throws Exception {
+		String key = "key_" + System.currentTimeMillis();
+		String serialIdKey = "mySerialId_" + System.currentTimeMillis();
 		KeyValueSettingEn keyValSetting = new KeyValueSettingEn(
 		        "view_demo.sys_dict_data",
 		        "dict_value",
@@ -39,26 +41,27 @@ public class KeyValue {
 				{put("dict_type", "my_defaul_type_base");}}
 		       );
 		
-		log.info(keyValueService.getValue(keyValSetting, "key"));
-		assertEquals(keyValueService.getValue(keyValSetting, "key"),null);
+		log.info(keyValueService.getValue(keyValSetting, key));
+		assertEquals(null, keyValueService.getValue(keyValSetting, key));
 		
-		keyValueService.setValue(keyValSetting, "key","value");
-		log.info(keyValueService.getValue(keyValSetting, "key"));
-		assertEquals(keyValueService.getValue(keyValSetting, "key"),"value");
+		keyValueService.setValue(keyValSetting, key,"value");
+		log.info(keyValueService.getValue(keyValSetting, key));
+		assertEquals("value", keyValueService.getValue(keyValSetting, key));
 		
-		keyValueService.setValue(keyValSetting, "key","value1");
-		log.info(keyValueService.getValue(keyValSetting, "key"));
-		assertEquals(keyValueService.getValue(keyValSetting, "key"),"value1");
+		keyValueService.setValue(keyValSetting, key,"value1");
+		log.info(keyValueService.getValue(keyValSetting, key));
+		assertEquals("value1", keyValueService.getValue(keyValSetting, key));
 		
-		assertEquals(keyValueService.getNextSerialId(keyValSetting,"mySerialId"),1l);
-		assertEquals(keyValueService.getNextSerialId(keyValSetting,"mySerialId"),2l);
-		assertEquals(keyValueService.getNextSerialId(keyValSetting,"mySerialId"),3l);
+		assertEquals(1L, keyValueService.getNextSerialId(keyValSetting,serialIdKey));
+		assertEquals(2L, keyValueService.getNextSerialId(keyValSetting,serialIdKey));
+		assertEquals(3L, keyValueService.getNextSerialId(keyValSetting,serialIdKey));
 	}
 	
 	@Test
 	@DisplayName("extend Usage")
 	@Order(2)
 	public void extendUsage() throws Exception {
+		String key = "key_" + System.currentTimeMillis();
 		KeyValueSettingEn keyValSetting = new KeyValueSettingEn(
 		        "view_demo.sys_dict_data",
 		        "dict_value",
@@ -97,14 +100,14 @@ public class KeyValue {
 		}};
 		
 		
-		assertEquals(keyValueService.getData(keyValSetting, "key"),null);
+		assertEquals(null, keyValueService.getData(keyValSetting, key));
 		
-		keyValueService.setData(keyValSetting, "key",myData1,"myUserId1");
-		log.info(keyValueService.getData(keyValSetting, "key").toString());
-		assertEquals(keyValueService.getData(keyValSetting, "key").get("status"),"0");
+		keyValueService.setData(keyValSetting, key,myData1,"myUserId1");
+		log.info(keyValueService.getData(keyValSetting, key).toString());
+		assertEquals("0", keyValueService.getData(keyValSetting, key).get("status"));
 		
-		keyValueService.setData(keyValSetting, "key",myData2,"myUserId2");
-		log.info(keyValueService.getData(keyValSetting, "key").toString());
-		assertEquals(keyValueService.getData(keyValSetting, "key").get("status"),"2");
+		keyValueService.setData(keyValSetting, key,myData2,"myUserId2");
+		log.info(keyValueService.getData(keyValSetting, key).toString());
+		assertEquals("2", keyValueService.getData(keyValSetting, key).get("status"));
 	}
 }

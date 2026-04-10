@@ -27,6 +27,7 @@ meta:
 props:
   setting: for Backend and Frontend
 */
-select * from view_demo.sys_user
+select *
+from view_demo.sys_user
   where domain_key = :currentDomain
   and department_id = :departmentId

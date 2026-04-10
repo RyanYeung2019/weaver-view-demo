@@ -31,6 +31,8 @@ public class Tree {
 	private ViewQuery viewQuery;
 
 	String classLevelMapping = "/tree/";
+
+    static final String HEADER_DATA_SOURCE = "dataSource";
 	
 	@GetMapping("**")
 	public ResponseEntity<ViewData<TreeData<Map<String, Object>>>> queryViewData(HttpServletRequest request,
@@ -63,13 +65,16 @@ public class Tree {
 		queryParams.put("currentUser", "admin");
 		
 		viewReqConfig.setParams(queryParams);
-		
+
+        String datasource = resolveDatasourceKey(request.getHeader(HEADER_DATA_SOURCE));
+
 		ViewStatement statement = viewQuery.prepareTree(viewId,sort);
 		statement.setParams(params);
 		statement.setValue(value);
 		statement.setLevel(level);
 		statement.setSearch(search);
 		statement.setViewReqConfig(viewReqConfig);
+        statement.setDataSource(datasource);
 		ViewData<TreeData<Map<String, Object>>> data = statement.queryTree();
 		
 		return new ResponseEntity<>(data, HttpStatus.OK);
@@ -77,5 +82,18 @@ public class Tree {
 	
     private void havePermission(String tableName,String action){
         log.info(String.format("find permission mapping for '%s' action '%s'",tableName,action));
-    }	
+    }
+
+    private String resolveDatasourceKey(String headerValue) {
+        if (headerValue == null || headerValue.isBlank()) {
+            return "dataSource";
+        }
+        if ("dataSource".equals(headerValue)) {
+            return "dataSource";
+        }
+        if (headerValue.startsWith("dataSource.")) {
+            return headerValue;
+        }
+        return "dataSource." + headerValue;
+    }
 }

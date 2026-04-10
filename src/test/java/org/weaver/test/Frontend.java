@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,53 +13,43 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.weaver.query.entity.QueryCriteria;
 import org.weaver.query.entity.QueryFilter;
-import org.weaver.view.util.Utils;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.junit.jupiter.api.MethodOrderer;
 
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayName("Frontend")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class Frontend {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class Frontend extends FrontendTestSupport {
 
 	private static final Logger log = LoggerFactory.getLogger(Frontend.class);
 	
-	@Autowired
-    private TestRestTemplate restTemplate;
-
-	@Autowired
-	private DataSource dataSource;
-	
-	@Test
+	@ParameterizedTest(name = "[{index}] db={0}")
+	@MethodSource("databaseCases")
 	@DisplayName("First Demo")
 	@Order(0)
-    public void firstDemo()  {
-		HttpHeaders headers = new HttpHeaders();
-		Map<String,String> params = new LinkedHashMap<>();
+    public void firstDemo(DatabaseCase db)  {
+		HttpHeaders headers = headersFor(db);
+        get("/view/reloadAllTheViewsDefineNow",headersFor(db),new LinkedHashMap<>(),JSONObject.class);
+
+        Map<String,String> params = new LinkedHashMap<>();
 		//中文版本
 		params.put("lang", "zh");
 		params.put("page", "1");
@@ -87,16 +74,18 @@ public class Frontend {
  * src/main/resources/view/department.sql 文件映射到 restfulApi的路径为：http://xxxx/view/department
  * 
  */
-	@Test
+	@ParameterizedTest(name = "[{index}] db={0}")
+	@MethodSource("databaseCases")
 	@DisplayName("Fetch Data Structure Only")
 	@Order(1)
-    public void sqlToApiFetchDataStructureOnly()  {
-		HttpHeaders headers = new HttpHeaders();
+    public void sqlToApiFetchDataStructureOnly(DatabaseCase db)  {
+        get("/view/reloadAllTheViewsDefineNow",headersFor(db),new LinkedHashMap<>(),JSONObject.class);
+		HttpHeaders headers = headersFor(db);
 		Map<String,String> params = new HashMap<>();
 		//中文版本
 		params.put("lang", "zh");
 		JSONObject respPage = get("/view/department",headers,params,JSONObject.class).getBody();
-		AssertDepartmentStructure(respPage);
+		AssertDepartmentStructure(respPage, db);
 		//英文版本
 		params.put("lang", "en-us");
 		JSONObject respPageEn = get("/view/department",headers,params,JSONObject.class).getBody();
@@ -106,13 +95,14 @@ public class Frontend {
 
 
 	
-	@Test
+	@ParameterizedTest(name = "[{index}] db={0}")
+	@MethodSource("databaseCases")
 	@DisplayName("Fetch Data")
 	@Order(3)
-    public void sqlToApiFetchData()  {
-		HttpHeaders headers = new HttpHeaders();
+    public void sqlToApiFetchData(DatabaseCase db)  {
+		HttpHeaders headers = headersFor(db);
 		Map<String,String> params = new LinkedHashMap<>();
-		//使用中午版本
+        get("/view/reloadAllTheViewsDefineNow",headersFor(db),params,JSONObject.class);
 		params.put("lang", "zh");
 		//获取第零页，每页三行数据
 		params.put("page", "0");
@@ -124,7 +114,7 @@ public class Frontend {
 
 		JSONObject respPage0 = get("/view/department",headers,params,JSONObject.class).getBody();
 		//检查返回数据结构信息
-		AssertDepartmentStructure(respPage0);
+		AssertDepartmentStructure(respPage0, db);
 		JSONArray data = respPage0.getJSONArray("data");
 		//检查返回数据
 		AssertData(data,3,"depKey","dep15","dep13");
@@ -159,13 +149,16 @@ public class Frontend {
 		AssertData(dataA,3,"depKey","dep01","dep03");	
 	}	
 	
-	@Test
+	@ParameterizedTest(name = "[{index}] db={0}")
+	@MethodSource("databaseCases")
 	@DisplayName("Fetch Data Aggrs")
 	@Order(4)
-    public void sqlToApiFetchDataAggrs()  {
-		HttpHeaders headers = new HttpHeaders();
+    public void sqlToApiFetchDataAggrs(DatabaseCase db)  {
+		HttpHeaders headers = headersFor(db);
 		Map<String,String> params = new LinkedHashMap<>();
-		params.put("lang", "zh");
+        get("/view/reloadAllTheViewsDefineNow",headers,params,JSONObject.class);
+
+        params.put("lang", "zh");
 		//获得返回记录总数
 		params.put("aggrs", "");
 		JSONObject respData0 = get("/view/department",headers,params,JSONObject.class).getBody();
@@ -178,21 +171,29 @@ public class Frontend {
 		assertEquals(aggr1.get("size"),15);
 		assertEquals(aggr1.get("domainKeyCount"),15);
 		assertEquals(aggr1.get("memberCountSum"),60);
-		assertEquals(aggr1.get("memberCountAvg"),4.0);
+		// Avoid type mismatch: some DBs return 4, others return 4.0
+		double memberCountAvg = ((Number) aggr1.get("memberCountAvg")).doubleValue();
+		assertEquals(4.0, memberCountAvg, 0.000001);
 	}
 	
-	@Test
+	@ParameterizedTest(name = "[{index}] db={0}")
+	@MethodSource("databaseCases")
 	@DisplayName("Fetch Data With Filter")
 	@Order(5)
-    public void sqlToApiFetchDataFilter()  {
-		HttpHeaders headers = new HttpHeaders();
+    public void sqlToApiFetchDataFilter(DatabaseCase db)  {
+		HttpHeaders headers = headersFor(db);
 		
 		Map<String,String> params = new LinkedHashMap<>();
+
+        //不同数据库 重新load 一次 view
+        get("/view/reloadAllTheViewsDefineNow",headers,params,JSONObject.class);
+
+
 		params.put("lang", "zh");
 		params.put("page", "1");
 		params.put("size", "3");
 		//QueryFilter辅助生成filter并产生对应的JSON值
-		
+
 		SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		QueryCriteria queryCriteria = new QueryCriteria("createTime",simpleDateFormat.format( new Date((new Date()).getTime() + (1000*60*5))));
 		queryCriteria.setOp(QueryCriteria.OP_LESS_THAN);
@@ -202,7 +203,7 @@ public class Frontend {
 		params.put("filter", enumQueryFilter.toJSONObject().toJSONString());
 		JSONObject respData = get("/view/department",headers,params,JSONObject.class).getBody();
 		//检查返回数据结构信息
-		AssertDepartmentStructure(respData);
+		AssertDepartmentStructure(respData, db);
 		JSONArray data = respData.getJSONArray("data");
 		//检查返回数据
 		AssertData(data,1,"depKey","dep01","dep01");
@@ -258,18 +259,23 @@ public class Frontend {
     *   where domain_key = :currentDomain
     * ```
     */
-	@Test
+	@ParameterizedTest(name = "[{index}] db={0}")
+	@MethodSource("databaseCases")
 	@DisplayName("Fetch Data By Remark Yaml")
 	@Order(6)
-    public void sqlToApiFetchDataByYamlRemark()  {
-		if(isSqlite())return;
+    public void sqlToApiFetchDataByYamlRemark(DatabaseCase db)  {
+		if(db.isSqlite())return;
+
+
+
 		Map<String,String> params = new LinkedHashMap<>();
+        get("/view/reloadAllTheViewsDefineNow",headersFor(db),params,JSONObject.class);
 		params.put("lang", "zh");
 		params.put("page", "1");
 		params.put("size", "3");
 		params.put("sort", "domainKey,userKey-d");
 		params.put("departmentId", "dep03");
-		JSONObject respData = get("/view/org/sys_user",new HttpHeaders(),params,JSONObject.class).getBody();
+		JSONObject respData = get("/view/org/sys_user",headersFor(db),params,JSONObject.class).getBody();
 		log.info(respData.toString());
 		/*
 		 * # data 返回查询数据
@@ -288,7 +294,7 @@ public class Frontend {
 		 * 
 		 */
 		params.put("translate", "false");
-		JSONObject respData1 = get("/view/org/sys_user",new HttpHeaders(),params,JSONObject.class).getBody();
+		JSONObject respData1 = get("/view/org/sys_user",headersFor(db),params,JSONObject.class).getBody();
 		
 		//翻译前：
 		String nonTranRemark1 = respData1.getJSONArray("data").getJSONObject(1).getString("remark");
@@ -300,7 +306,7 @@ public class Frontend {
 		Map<String,String> paramsLang = new LinkedHashMap<>();
 		paramsLang.put("lang", "zh");
 		paramsLang.put("key", "message.demo");
-		JSONObject dataLang = get("/lang",new HttpHeaders(),paramsLang,JSONObject.class).getBody();
+		JSONObject dataLang = get("/lang",headersFor(db),paramsLang,JSONObject.class).getBody();
 		String langTemp = dataLang.getString("value");
 		assertEquals(langTemp.trim(),"""
 				文本: [${text}] 数字: [${number}] 再一次文本: [${text}]
@@ -349,7 +355,7 @@ public class Frontend {
 			paramsDepartment.put("size", "1");
 			QueryFilter queryFilter = new QueryFilter(new QueryCriteria("depKey", departmentId));
 			paramsDepartment.put("filter", queryFilter.toJSONObject().toJSONString());			
-			JSONObject departDepartmentData = get("/view/org/department",new HttpHeaders(),paramsDepartment,JSONObject.class).getBody();
+			JSONObject departDepartmentData = get("/view/org/department",headersFor(db),paramsDepartment,JSONObject.class).getBody();
 			String departmentName2 = departDepartmentData.getJSONArray("data").getJSONObject(0).getString("depName");
 			assertEquals(departmentName1,departmentName2);
 		} 
@@ -386,7 +392,7 @@ public class Frontend {
 			String perfix = domainKey+"_"+departmentId+"_";
 			QueryFilter queryFilter = new QueryFilter(new QueryCriteria("posKey", positionId.replaceFirst(perfix, "")));
 			paramsForView.put("filter", queryFilter.toJSONObject().toJSONString());			
-			JSONObject dataForView = get("/view/org/position",new HttpHeaders(),paramsForView,JSONObject.class).getBody();
+			JSONObject dataForView = get("/view/org/position",headersFor(db),paramsForView,JSONObject.class).getBody();
 			String positionName2 = dataForView.getJSONArray("data").getJSONObject(0).getString("posName");
 			assertEquals(positionName1,positionName2);
 		}
@@ -423,7 +429,7 @@ public class Frontend {
 			Map<String,String> paramsForView = new LinkedHashMap<>();
 			paramsForView.put("lang", "zh");
 			paramsForView.put("key", "common.status."+status);
-			JSONObject dataForView = get("/lang",new HttpHeaders(),paramsForView,JSONObject.class).getBody();
+			JSONObject dataForView = get("/lang",headersFor(db),paramsForView,JSONObject.class).getBody();
 			String statusName2 = dataForView.getString("value");
 			assertEquals(statusName1,statusName2);
 		}
@@ -519,13 +525,16 @@ public class Frontend {
 	 * 分别是树的ID字段，数的上级ID字段和搜索字段，其中搜索字段非必须。
 	 * 加入树结构描述后可以通过tree的API进行递归运算返回树结构数据。
 	 */
-	@Test
+	@ParameterizedTest(name = "[{index}] db={0}")
+	@MethodSource("databaseCases")
 	@DisplayName("Tree View Api")
 	@Order(7)
-    public void treeViewApi()  {
-		if(isSqlite())return;
+    public void treeViewApi(DatabaseCase db)  {
+		if(db.isSqlite())return;
 		Map<String,String> paramsTree = new LinkedHashMap<>();
-		paramsTree.put("lang", "zh");
+        get("/view/reloadAllTheViewsDefineNow",headersFor(db),paramsTree,JSONObject.class);
+
+        paramsTree.put("lang", "zh");
 		//定义那个树节点开始遍历，不传值测从父节点为null的顶级节点开始。
 		paramsTree.put("value", "STF001");
 		//遍历深度为三层，不传值会完全遍历到最末端
@@ -537,7 +546,7 @@ public class Frontend {
 		paramsTree.put("search", "Hahn");
 		//sql中用到的参数
 		paramsTree.put("departmentId", "dep03");
-		JSONObject dataTree = get("/tree/org/sys_user",new HttpHeaders(),paramsTree,JSONObject.class).getBody();
+		JSONObject dataTree = get("/tree/org/sys_user",headersFor(db),paramsTree,JSONObject.class).getBody();
 		
 		JSONArray nodeData = dataTree.getJSONArray("data");
 		AssertData(nodeData,2,"node.userKey","STF005","STF002");
@@ -561,7 +570,7 @@ public class Frontend {
 		paramsView.put("size", "30");
 		paramsView.put("sort", "domainKey,userKey-d");
 		paramsView.put("departmentId", "dep03");
-		JSONObject dataView = get("/view/org/sys_user",new HttpHeaders(),paramsView,JSONObject.class).getBody();
+		JSONObject dataView = get("/view/org/sys_user",headersFor(db),paramsView,JSONObject.class).getBody();
 		
 		assertEquals(dataTree.getJSONObject("valueMapping").toString(),dataView.getJSONObject("valueMapping").toString());
 		assertEquals(dataTree.getJSONArray("fields").toString(),dataView.getJSONArray("fields").toString());
@@ -578,25 +587,12 @@ public class Frontend {
 		//paramsTreePath.put("sort", "userKey-d");
 		//sql中用到的参数
 		paramsTreePath.put("departmentId", "dep03");
-		JSONObject dataTreePath = get("/tree/org/sys_user",new HttpHeaders(),paramsTreePath,JSONObject.class).getBody();
+		JSONObject dataTreePath = get("/tree/org/sys_user",headersFor(db),paramsTreePath,JSONObject.class).getBody();
 		JSONArray pathNodeData = dataTreePath.getJSONArray("data");
 		
 		AssertData(pathNodeData,4,"node.userKey","STF007","STF001");
 	}
 	
-	private <T> ResponseEntity<T> get(String url,HttpHeaders headers,Map<String,String> urlParams,Class<T> clazz){
-	    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
-        for(String urlParam:urlParams.keySet()) {
-        	if(urlParam.equals("filter")||urlParam.equals("search")||urlParam.equals("value")) {
-           		builder.queryParam(urlParam,Utils.urlEncoder(urlParams.get(urlParam)));//url encode JSON String
-        	}else {
-           		builder.queryParam(urlParam,urlParams.get(urlParam));
-        	}
-        }
-	    return restTemplate.exchange(builder.build().toString(),HttpMethod.GET,request,clazz);
-	}
-
 	private boolean compareJSONObjects(JSONObject obj1, JSONObject obj2) {
         for (String key : obj1.keySet()) {
             Object value1 = obj1.get(key);
@@ -704,8 +700,8 @@ public class Frontend {
      *    depKey.desc: 标记该部门的代码
 	 * ```	 
 	 */	
-	private void AssertDepartmentStructure(JSONObject value){
-		if(isSqlite())return;//sqlite不断言字段类型
+	private void AssertDepartmentStructure(JSONObject value, DatabaseCase db){
+		if(db.isSqlite())return;//sqlite不断言字段类型
         // 比较顶级字段
         assertEquals("部门", value.getString("name"));
         assertEquals("保存公司部门相关资料", value.getString("desc"));
@@ -757,7 +753,14 @@ public class Frontend {
         assertEquals(1, fields.getJSONObject(idx).getIntValue("preci"));
         assertEquals("停止", fields.getJSONObject(idx).getString("name"));
         assertEquals(0, fields.getJSONObject(idx).getIntValue("scale"));
-        assertEquals("boolean", fields.getJSONObject(idx).getString("type"));
+        String stoppedType = fields.getJSONObject(idx).getString("type");
+        if (db.databaseProductName().equals("oracle")) {
+            // Oracle NUMBER(1) is sometimes exposed as number, sometimes as boolean in metadata
+            assertTrue("number".equals(stoppedType) || "boolean".equals(stoppedType));
+        } else {
+            assertEquals("boolean", stoppedType);
+        }
+
         assertEquals("stopped", fields.getJSONObject(idx).getString("desc"));
         idx++;
 
@@ -798,26 +801,4 @@ public class Frontend {
 	}
 	
 
-	private boolean isSqlite() {
-		Connection conn = DataSourceUtils.getConnection(dataSource);
-		try {
-			if (conn != null && (!conn.isClosed())) {
-				DatabaseMetaData metaData = conn.getMetaData();
-				String databaseProductName = metaData.getDatabaseProductName().toLowerCase();
-				if (databaseProductName.matches("(?i).*sqlite*")) {
-					return true;
-				}
-			}
-			return false;
-		} catch (SQLException e) {
-			throw new RuntimeException("Failed to create tables for dashboards database.", e);
-		}catch (Exception ex) {
-			DataSourceUtils.releaseConnection(conn, dataSource);
-			conn = null;
-			throw new RuntimeException(ex);
-		}finally {
-			DataSourceUtils.releaseConnection(conn, dataSource);
-		}		
-	}
-	
 }

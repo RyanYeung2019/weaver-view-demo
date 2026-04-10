@@ -8,6 +8,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -41,7 +42,7 @@ public class Table {
 
 	@Autowired
 	private TableService tableService;
-	
+
 	String classLevelMapping = "/table/";
 	
 	@GetMapping("**")
@@ -52,10 +53,22 @@ public class Table {
 		RequestConfig reqConfig = new RequestConfig();
 		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
+        String emptyTableCacheDefine = "emptyTableCacheNow";
+        if(table.endsWith(emptyTableCacheDefine)) {
+            tableService.emptyTableCache();
+            return new ResponseEntity<JSONObject>(new JSONObject(), HttpStatus.OK);
+        }
 		havePermission(table,"list");		
-		String datasource = request.getHeader(HEADER_DATA_SOURCE);
+		String datasource = resolveDatasourceKey(request.getHeader(HEADER_DATA_SOURCE));
+        String whereFields = request.getHeader(HEADER_WHERE_FIELDS);
 		Date startTime = new Date();
-		JSONObject tableInfo = tableService.readTable(datasource, table, data, reqConfig);
+        JSONObject tableInfo = null;
+        if(whereFields!=null) {
+            String[] fields = whereFields.split(",");
+            tableInfo = tableService.readTable(datasource, table, data, reqConfig, fields);
+        }else {
+            tableInfo = tableService.readTable(datasource, table, data, reqConfig);
+        }
 		tableInfo.put("data", data);
 		tableInfo.put("startTime", startTime);
 		tableInfo.put("endTime", new Date());
@@ -71,7 +84,7 @@ public class Table {
 		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"add");
-		String datasource = request.getHeader(HEADER_DATA_SOURCE);
+		String datasource = resolveDatasourceKey(request.getHeader(HEADER_DATA_SOURCE));
 		Map<String, Object> params = getSystemInfoForParams();
 		params.put("createBy", params.get("currentNickName"));
 		params.put("createTime", params.get("currentDate"));
@@ -92,7 +105,8 @@ public class Table {
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"add");
 		havePermission(table,"edit");
-		String datasource = request.getHeader(HEADER_DATA_SOURCE);
+		String datasource = resolveDatasourceKey(request.getHeader(HEADER_DATA_SOURCE));
+        String whereFields = request.getHeader(HEADER_WHERE_FIELDS);
 		RequestConfig reqConfig = new RequestConfig();
 		tableService.setTableReqConfig(reqConfig);
 		Map<String, Object> params = getSystemInfoForParams();
@@ -104,7 +118,13 @@ public class Table {
 		params.put("updateBy", params.get("currentNickName"));
 		params.put("updateTime", new Date());
 		reqConfig.setParams(params);
-		int[] result = tableService.persistenTableBatch(datasource,table, datas,reqConfig);
+		int[] result;
+        if(whereFields!=null ) {
+            String[] fields = whereFields.split(",");
+            result = tableService.persistenTableBatch(datasource,table, datas,reqConfig,fields);
+        }else {
+            result = tableService.persistenTableBatch(datasource,table, datas,reqConfig);
+        }
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
@@ -115,7 +135,7 @@ public class Table {
 			){
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"edit");
-		String datasource = request.getHeader(HEADER_DATA_SOURCE);
+		String datasource = resolveDatasourceKey(request.getHeader(HEADER_DATA_SOURCE));
 		String whereFields = request.getHeader(HEADER_WHERE_FIELDS);
 		String assertMaxRecordAffected = request.getHeader(HEADER_ASSERT_MAX_RECORD_AFFECTED);
 		RequestConfig reqConfig = new RequestConfig();
@@ -125,9 +145,9 @@ public class Table {
 		params.put("updateTime", params.get("currentDate"));        
 		reqConfig.setParams(params);
 		Integer result = 0;
-		if(whereFields!=null && assertMaxRecordAffected!=null) {
+		if(whereFields!=null ) {
 			String[] fields = whereFields.split(",");
-			result = tableService.updateTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
+			result = tableService.updateTableBatch(datasource,table,data,(assertMaxRecordAffected==null?null:Long.valueOf(assertMaxRecordAffected)),reqConfig,fields);
 		}else {
 			result = tableService.updateTable(datasource,table,data,reqConfig);
 		}
@@ -143,13 +163,13 @@ public class Table {
 		tableService.setTableReqConfig(reqConfig);
 		String table = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
 		havePermission(table,"remove");
-		String datasource = request.getHeader(HEADER_DATA_SOURCE);
+		String datasource = resolveDatasourceKey(request.getHeader(HEADER_DATA_SOURCE));
 		String whereFields = request.getHeader(HEADER_WHERE_FIELDS);
 		String assertMaxRecordAffected = request.getHeader(HEADER_ASSERT_MAX_RECORD_AFFECTED);
 		Integer result = 0;
-		if(whereFields!=null && assertMaxRecordAffected!=null) {
+		if(whereFields!=null) {
 			String[] fields = whereFields.split(",");
-			result = tableService.deleteTableBatch(datasource,table,data,Long.valueOf(assertMaxRecordAffected),reqConfig,fields);
+			result = tableService.deleteTableBatch(datasource,table,data,(assertMaxRecordAffected==null?null:Long.valueOf(assertMaxRecordAffected)),reqConfig,fields);
 		}else {
 			result = tableService.deleteTable(datasource,table,data,reqConfig);
 		}
@@ -176,5 +196,20 @@ public class Table {
     private void havePermission(String tableName,String action){
         log.info(String.format("find permission mapping for '%s' action '%s'",tableName,action));
     }
+
+	private String resolveDatasourceKey(String headerValue) {
+		if (headerValue == null || headerValue.isBlank()) {
+			// Keep compatibility with existing tests that rely on the default alias bean.
+			return "dataSource";
+		}
+		if ("dataSource".equals(headerValue)) {
+			return "dataSource";
+		}
+		if (headerValue.startsWith("dataSource.")) {
+			return headerValue;
+		}
+		// Accept bare db keys from callers, e.g. "postgresql" -> "dataSource.postgresql".
+		return "dataSource." + headerValue;
+	}
 	
 }

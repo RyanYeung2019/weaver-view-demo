@@ -2,27 +2,57 @@ server:
   port: 8081
   servlet:
     context-path: /demo
-spring:
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-      
-    #url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
-    #driver-class-name: com.mysql.cj.jdbc.Driver
-    #username: root
-    #password: abc123
-    
-    #url: jdbc:postgresql://127.0.0.1:5432/postgres
-    #driver-class-name: org.postgresql.Driver
-    #username: postgres
-    #password: abc123
-          
-    url: jdbc:sqlite:database.db
-    driver-class-name: org.sqlite.JDBC
-    username: xxx
-    password: xxx
+
+# Used by app.datasources.*.password placeholders (override in CI/Docker via env).
+jdbcPassword: ${JDBC_PASSWORD:KShFngabc20260312}
+
+# Single DataSource auto-config disabled; see MultiDataSourceConfig + RunApp excludes.
+
+app:
+  demo-db:
+    default-key: postgresql
+    query-param: db
+    header-name: X-Demo-Db
+  datasource-init:
+    enabled: true
+  datasources:
+    postgresql:
+      enabled: true
+      url: jdbc:postgresql://localhost:5432/postgres
+      driver-class-name: org.postgresql.Driver
+      username: postgres
+      password: ${jdbcPassword}
+      init-script: classpath:ini_data_pgsql.sql
+    mysql:
+      enabled: true
+      url: jdbc:mysql://localhost:3306/view_demo?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: ${jdbcPassword}
+      init-script: classpath:ini_data_mysql.sql
+    oracle:
+      enabled: true
+      url: jdbc:oracle:thin:@//localhost:1521/FREEPDB1
+      driver-class-name: oracle.jdbc.OracleDriver
+      username: view_demo
+      password: ${jdbcPassword}
+      init-script: classpath:ini_data_oracle.sql
+    sqlserver:
+      enabled: true
+      url: jdbc:sqlserver://localhost:1433;databaseName=view_demo;encrypt=false;trustServerCertificate=true
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      username: sa
+      password: ${jdbcPassword}
+      init-script: classpath:ini_data_mssql.sql
+    sqlite:
+      enabled: true
+      url: jdbc:sqlite:database.db
+      driver-class-name: org.sqlite.JDBC
+      username: ""
+      password: ""
+      init-script: classpath:ini_data_sqlite.sql
+
 logging:
   level:
     org.weaver.service: info
   config: classpath:logback.xml
-    
-    

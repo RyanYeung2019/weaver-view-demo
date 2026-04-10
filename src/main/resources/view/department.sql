@@ -1,1 +1,2 @@
-select * from view_demo.department
+select *
+from view_demo.department

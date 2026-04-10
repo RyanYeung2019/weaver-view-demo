@@ -34,7 +34,9 @@ public class View {
 	ViewDefine viewDefine;
 	
 	String classLevelMapping = "/view/";
-	
+
+    static final String HEADER_DATA_SOURCE = "dataSource";
+
     @GetMapping("**")
     public ResponseEntity<ViewData<Map<String, Object>>> queryViewData(HttpServletRequest request,
                                                                        @RequestParam Map<String,Object> params,
@@ -49,9 +51,10 @@ public class View {
         throws Exception {
         String viewId = request.getRequestURL().toString().split(classLevelMapping)[1].replace("/", ".");
         String reloadViewDefine = "reloadAllTheViewsDefineNow";
+        String datasource = resolveDatasourceKey(request.getHeader(HEADER_DATA_SOURCE));
         if(viewId.endsWith(reloadViewDefine)) {
         	Date startTime = new Date();
-        	String result = viewDefine.loadView();
+        	String result = viewDefine.loadView(datasource);
         	ViewData<Map<String, Object>> data = new ViewData<>();
     		data.setStartTime(startTime);
     		data.setEndTime(new Date());
@@ -68,6 +71,7 @@ public class View {
             statement = viewQuery.prepareView(viewId,sort,page,size,filter,aggrs);
         }
         statement.setParams(params);
+        statement.setDataSource(datasource);
         RequestConfig viewReqConfig = new RequestConfig();
         viewReqConfig.setLanguage(lang);
         viewReqConfig.setTranslate(translate);
@@ -98,6 +102,18 @@ public class View {
     
     private void havePermission(String tableName,String action){
         log.info(String.format("find permission mapping for '%s' action '%s'",tableName,action));
-    }		
-	
+    }
+
+    private String resolveDatasourceKey(String headerValue) {
+        if (headerValue == null || headerValue.isBlank()) {
+            return "dataSource";
+        }
+        if ("dataSource".equals(headerValue)) {
+            return "dataSource";
+        }
+        if (headerValue.startsWith("dataSource.")) {
+            return headerValue;
+        }
+        return "dataSource." + headerValue;
+    }
 }

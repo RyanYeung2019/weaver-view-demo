@@ -10,7 +10,7 @@ meta:
   group: system
   tables: view_demo.department
 */
-select * from view_demo.department 
+select *
+from view_demo.department 
   where domain_key = :currentDomain 
-    and create_user = :currentUser 
-    and (stopped = false or stopped is null)
+    and create_user = :currentUser

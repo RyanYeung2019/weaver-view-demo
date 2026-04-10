@@ -1,0 +1,123 @@
+services:
+    postgresql:
+        image: ${dockerProxy}sameersbn/postgresql:9.5-4
+        container_name: weaver_view_pgsql
+        volumes:
+            - pgsqlData:/var/lib/postgresql
+        environment:
+            - PG_PASSWORD=${jdbcPassword}
+        healthcheck:
+            test: ['CMD', 'pg_isready', '-q', '-d', 'postgres', '-U', 'postgres']
+            interval: 10s
+            timeout: 10s
+            retries: 3
+        networks:
+            - weaverViewNet
+        ports:
+          - 5432:5432
+        restart: always
+
+    mysql:
+        image: ${dockerProxy}mysql:8.4
+        container_name: weaver_view_mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: ${jdbcPassword}
+            MYSQL_DATABASE: view_demo
+            MYSQL_ROOT_HOST: '%'
+        healthcheck:
+            test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD']
+            interval: 10s
+            timeout: 10s
+            retries: 10
+            start_period: 30s
+        networks:
+            - weaverViewNet
+        ports:
+          - 3306:3306
+        restart: always
+
+    oracle:
+        image: ${dockerProxy}gvenzl/oracle-xe:21-slim
+        container_name: weaver_view_oracle
+        environment:
+            ORACLE_PASSWORD: ${jdbcPassword}
+            APP_USER: view_demo
+            APP_USER_PASSWORD: ${jdbcPassword}
+        healthcheck:
+            test: ['CMD', 'healthcheck.sh']
+            interval: 20s
+            timeout: 5s
+            retries: 30
+            start_period: 120s
+        networks:
+            - weaverViewNet
+        ports:
+          - 1521:1521
+        restart: always
+
+    # Azure SQL Edge（与 mssql-jdbc / ini_data_mssql.sql 协议兼容）；tools 路径为 /opt/mssql-tools/bin
+    sqlserver:
+        image: ${dockerProxy}rudderstack/azure-sql-edge:1.0.6
+        container_name: weaver_view_sqlserver
+        environment:
+            ACCEPT_EULA: 'Y'
+            MSSQL_SA_PASSWORD: "${jdbcPassword}"
+        healthcheck:
+            test: ['CMD-SHELL', '/opt/mssql-tools/bin/sqlcmd -C -S localhost -U sa -P $$MSSQL_SA_PASSWORD -Q "SELECT 1" || exit 1']
+            interval: 10s
+            timeout: 10s
+            retries: 15
+            start_period: 45s
+        networks:
+            - weaverViewNet
+        ports:
+          - 1433:1433
+        restart: always
+
+    weaverViewDemo:
+        image: ${dockerProxy}weaver_view_demo
+        container_name: weaver_view_demo
+        build:
+            context: .
+            args:
+                dockerProxy: ${dockerProxy}
+                mavenUrl: ${mavenUrl:-https://repo1.maven.org/maven2}
+                mavenUser: ${mavenUser}
+                mavenPw: ${mavenPw}
+        depends_on:
+            postgresql:
+                condition: service_healthy
+            mysql:
+                condition: service_healthy
+            oracle:
+                condition: service_healthy
+            sqlserver:
+                condition: service_healthy
+        volumes:
+            - /etc/localtime:/etc/localtime
+            - sqliteData:/data
+        ports:
+            - 8081:8081
+        command: >
+          java
+          -jar weaver-view-demo.jar --jdbcPassword=${jdbcPassword}
+        environment:
+            - TZ=Asia/Hong_Kong
+        healthcheck:
+            test: ['CMD', 'curl', '-f', 'http://localhost:8081/demo']
+            interval: 10s
+            timeout: 10s
+            retries: 3
+        restart: always
+        networks:
+            - weaverViewNet
+
+volumes:
+    pgsqlData:
+        driver: local
+    sqliteData:
+        driver: local
+
+networks:
+    weaverViewNet:
+        driver: bridge

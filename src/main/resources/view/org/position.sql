@@ -13,7 +13,8 @@ meta:
   group: security
   tables: view_demo.test_field
 */
-select * from view_demo.position 
+select *
+from view_demo.position 
   where domain_key = :currentDomain 
     and create_user = :currentUser 
     and dep_key = :depKey

@@ -1,5 +1,3 @@
-ATTACH DATABASE 'database.db' AS view_demo;
-
 DROP TABLE IF EXISTS view_demo.test_field;
 CREATE TABLE view_demo.test_field
 (
@@ -13,13 +11,13 @@ CREATE TABLE view_demo.test_field
     update_time          timestamp                                                   NULL DEFAULT NULL ,
     update_by            VARCHAR(64)   NULL DEFAULT NULL,
     remark               VARCHAR(500)  NULL DEFAULT NULL
-);  
+);
 
 
 DROP TABLE IF EXISTS view_demo.sys_dict_data;
 create table view_demo.sys_dict_data
 (
-    dict_code  SERIAL,
+    dict_code  INTEGER PRIMARY KEY AUTOINCREMENT,
     dict_sort INTEGER default 0,
     dict_label  varchar(100),
     dict_value  varchar(100),
@@ -53,7 +51,7 @@ create table view_demo.department(
 );
 
 INSERT INTO view_demo.department (domain_key, dep_key, dep_name, member_count, stopped, create_time, create_user, update_time, update_user)
-VALUES 
+VALUES
 ('domain1', 'dep01', '行政管理部',5, null, datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'dep02', '业务拓展部',8, null, datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'dep03', '技术支持部',6, false, datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
@@ -86,12 +84,12 @@ create table view_demo.position(
 );
 
 INSERT INTO view_demo.position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
-VALUES 
+VALUES
 ('domain1', 'dep03', 'pos1', '开发组长', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'dep03', 'pos2', '软件工程师', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin');
 
 INSERT INTO view_demo.position (domain_key, dep_key, pos_key, pos_name, create_time, create_user, update_time, update_user)
-VALUES 
+VALUES
 ('domain1', 'dep02', 'pos1', '后勤组长', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'dep02', 'pos2', '后勤保障员', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin');
 
@@ -114,7 +112,7 @@ create table view_demo.sys_user(
 );
 
 INSERT INTO view_demo.sys_user (domain_key, user_key, parent_user, user_name, department_id, position_id, status, remark, create_time, create_user, update_time, update_user)
-VALUES 
+VALUES
 ('domain1', 'STF001',null, 'Horne', 'dep03', 'pos1', null,'', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'STF002','STF001', 'Sharp', 'dep03', 'pos2', 'C','', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'STF003','STF002', 'Johnston', 'dep03', 'pos2', null,'', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
@@ -122,6 +120,4 @@ VALUES
 ('domain1', 'STF005','STF001', 'Pickett', 'dep03', 'pos1', 'A','{{label.position}}:{{ department.field.positionId.enum {"value":"pos2","depKey":"dep03"} }}({{common.status{"value":"C"}}})', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'STF006','STF005', 'Dawson', 'dep03', 'pos2', 'C','参数化提示信息：{{message.demo{"text":"文本","number":"123"}}}', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin'),
 ('domain1', 'STF007','STF006', 'Hahn', 'dep03', 'pos2', 'C','', datetime('now', 'localtime'), 'admin', datetime('now', 'localtime'), 'admin');
-
-
 

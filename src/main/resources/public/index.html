@@ -115,6 +115,15 @@
         .format-btn {
             background: #ff9800;
         }
+        .db-select {
+            height: 28px;
+            padding: 0 0.4rem;
+            border: 1px solid #666;
+            border-radius: 3px;
+            background: #fff;
+            font-size: 0.8rem;
+            min-width: 120px;
+        }
         .CodeMirror {
             flex-grow: 1;
             border-radius: 0 0 4px 4px;
@@ -227,6 +236,13 @@
             <div class="editor-panel">
                 <div class="panel-header">代码编辑区</div>
                 <div class="editor-toolbar">
+                    <select id="dbSelect" class="db-select" title="选择测试数据库">
+                        <option value="postgresql">PostgreSQL</option>
+                        <option value="mysql">MySQL</option>
+                        <option value="oracle">Oracle</option>
+                        <option value="sqlserver">SQL Server</option>
+                        <option value="sqlite">SQLite</option>
+                    </select>
                     <button class="wrap-btn" id="wrapBtn">换行</button>
                     <button class="clear-btn" id="clearBtn">清空</button>
                     <button class="format-btn" id="formatBtn">格式化</button>
@@ -607,6 +623,7 @@ fetchData();`
         const clearBtn = document.getElementById('clearBtn');
         const wrapBtn = document.getElementById('wrapBtn');
         const formatBtn = document.getElementById('formatBtn'); 
+        const dbSelect = document.getElementById('dbSelect');
         let isWrapping = true;
         let pendingPromises = 0;
 
@@ -676,6 +693,21 @@ fetchData();`
             }
         });
 
+        function buildDbAwareUrl(url, dbKey) {
+            try {
+                const parsedUrl = new URL(url, window.location.origin);
+                const isSameOrigin = parsedUrl.origin === window.location.origin;
+                const isDemoApi = parsedUrl.pathname.startsWith('/demo/');
+                if (isSameOrigin && isDemoApi) {
+                    parsedUrl.searchParams.set('db', dbKey);
+                    return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
+                }
+            } catch (e) {
+                // Keep original URL when parsing fails.
+            }
+            return url;
+        }
+
         async function runCode() {
             resultOutput.innerHTML = '';
             pendingPromises = 0;
@@ -731,7 +763,19 @@ fetchData();`
                     pendingPromises++;
                     updateExecutionStatus();
                     try {
-                        const response = await originalFetch(url, options);
+                        const selectedDbKey = dbSelect.value || 'postgresql';
+                        const finalUrl = buildDbAwareUrl(url, selectedDbKey);
+                        const requestOptions = { ...options };
+                        const headers = new Headers(requestOptions.headers || {});
+                        const parsedFinalUrl = new URL(finalUrl, window.location.origin);
+                        const isSameOrigin = parsedFinalUrl.origin === window.location.origin;
+                        const isDemoApi = parsedFinalUrl.pathname.startsWith('/demo/');
+                        if (isSameOrigin && isDemoApi) {
+                            headers.set('dataSource', selectedDbKey);
+                            headers.set('X-Demo-Db', selectedDbKey);
+                            requestOptions.headers = headers;
+                        }
+                        const response = await originalFetch(finalUrl, requestOptions);
                         return response;
                     } catch (error) {
                         const errorInfo = document.createElement('div');
